@@ -1,0 +1,25 @@
+{% extends "registrations_campaigns/layout.html" %}
+{% block title %}پویش‌ها{% endblock %}
+{% block participation %}
+<h1>پویش‌های هیئت</h1>
+{% include "dorm_heiat/filter_form.html" %}
+<div class="campaigns">
+{% for campaign in page %}
+  <article>
+    {% if campaign.banner %}<img src="{% url 'registrations_campaigns:banner' campaign.pk %}" alt="" loading="lazy">{% endif %}
+    <h2><a href="{% url 'registrations_campaigns:detail' campaign.pk %}{{ scope.query }}">{{ campaign.title }}</a></h2>
+    <p>{{ campaign.public_status }} · {{ campaign.starts_on|date:"Y/m/d" }} تا {{ campaign.ends_on|date:"Y/m/d" }}</p>
+    <p>{{ campaign.description|truncatechars:160 }}</p>
+  </article>
+{% empty %}
+  <p>هنوز پویشی برای نمایش وجود ندارد.</p>
+{% endfor %}
+</div>
+{% if page.has_other_pages %}
+<nav aria-label="صفحه‌بندی">
+  {% if page.has_previous %}<a href="?page={{ page.previous_page_number }}{% if scope.selected %}&amp;unit={{ scope.selected }}{% endif %}">صفحهٔ قبل</a>{% endif %}
+  <span>{{ page.number }} از {{ page.paginator.num_pages }}</span>
+  {% if page.has_next %}<a href="?page={{ page.next_page_number }}{% if scope.selected %}&amp;unit={{ scope.selected }}{% endif %}">صفحهٔ بعد</a>{% endif %}
+</nav>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% load static %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'registrations_campaigns/forms.css' %}">{% endblock %}
+{% block content %}
+<main class="participation">
+  <nav aria-label="مشارکت"><a href="{% url 'registrations_campaigns:volunteer' %}{{ scope.query }}">ثبت‌نام خُدام</a> · <a href="{% url 'registrations_campaigns:campaigns' %}{{ scope.query }}">پویش‌ها</a></nav>
+  {% for message in messages %}<p class="notice" role="status">{{ message }}</p>{% endfor %}
+  {% block participation %}{% endblock %}
+</main>
+{% endblock %}

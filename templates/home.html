@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}صفحهٔ اصلی | محبان{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-[#FDFBF1] font-['Vazirmatn'] text-[#2D3E33] text-right" dir="rtl">
+
+    <!-- Hero Section -->
+    <section class="relative overflow-hidden bg-[#FDFBF1] pt-12 pb-20 px-6 md:px-12">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-12">
+            <!-- Text Content -->
+            <div class="flex-1 space-y-8 z-10">
+                <div class="space-y-2">
+                    <p class="text-[#C5A267] text-lg font-medium">به محبان خوش آمدید</p>
+                    <h1 class="text-6xl md:text-7xl font-bold text-[#1B3022] leading-tight">با هم، برای هم</h1>
+                </div>
+                <p class="text-xl text-[#4A5D50] leading-relaxed max-w-lg">
+                    خبرهای هیئت را دنبال کنید، لحظه‌های مراسم را دوباره ببینید و در پویش‌ها یا خادمی همراه ما شوید.
+                </p>
+                <div class="flex flex-wrap gap-4 pt-4">
+                    <a href="{% url 'registrations_campaigns:volunteer' %}" class="bg-[#1B3022] text-white px-8 py-4 rounded-2xl flex items-center gap-2 hover:bg-[#2D4533] transition-all shadow-lg">
+                        <span>ثبت‌نام خُدام</span>
+                    </a>
+                    <a href="#content" class="border-2 border-[#1B3022] text-[#1B3022] px-8 py-4 rounded-2xl hover:bg-[#1B3022] hover:text-white transition-all">
+                        مرور بخش‌ها
+                    </a>
+                </div>
+            </div>
+
+            <!-- Image/Art Part (Using the generated style) -->
+            <div class="flex-1 relative">
+                <div class="rounded-[40px] overflow-hidden shadow-2xl border-4 border-white">
+                    <img src="{% static 'images/hero_image.jpg' %}" alt="محبان" class="w-full h-[450px] object-cover">
+                </div>
+                <!-- Decorative element -->
+                <div class="absolute -bottom-6 -right-6 w-32 h-32 bg-[#C5A267]/20 rounded-full blur-3xl"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Search/Filter Bar -->
+    <div id="content" class="max-w-7xl mx-auto -mt-10 px-6">
+        <div class="bg-white rounded-3xl shadow-xl p-2 flex items-center gap-4 border border-[#E5E7EB]">
+            <div class="p-4"><svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></div>
+            <select class="flex-1 bg-transparent border-none focus:ring-0 text-lg py-4 text-gray-600">
+                <option>جست‌وجو بر اساس خوابگاه یا واحد</option>
+                <option>خوابگاه حافظ</option>
+                <option>واحد برادران</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Content Grid -->
+    <section class="max-w-7xl mx-auto py-20 px-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+
+            <!-- Card: Announcements -->
+            <div class="bg-white rounded-[32px] overflow-hidden shadow-md border border-[#F0F0F0] hover:shadow-xl transition-all">
+                <div class="bg-[#1B3022] p-4 flex justify-between items-center text-white">
+                    <span class="font-bold">اطلاعیه‌ها</span>
+                    <svg class="w-6 h-6 text-[#C5A267]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                </div>
+                <div class="p-6 flex items-center gap-4">
+                    <div class="flex-1">
+                        <h4 class="font-bold text-[#1B3022]">اطلاعیه مهم مراسم</h4>
+                        <p class="text-xs text-gray-400 mt-2">۱۴۰۳/۰۶/۲۸ | اطلاعیه</p>
+                    </div>
+                    <div class="w-16 h-16 rounded-2xl bg-gray-100 overflow-hidden">
+                        <img src="{% static 'images/thumb1.jpg' %}" class="object-cover w-full h-full">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card: Reports -->
+            <div class="bg-white rounded-[32px] overflow-hidden shadow-md border border-[#F0F0F0] hover:shadow-xl transition-all">
+                <div class="bg-[#1B3022] p-4 flex justify-between items-center text-white">
+                    <span class="font-bold">گزارش‌ها و تصاویر</span>
+                    <svg class="w-6 h-6 text-[#C5A267]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg>
+                </div>
+                <div class="p-6 flex items-center gap-4">
+                    <div class="flex-1">
+                        <h4 class="font-bold text-[#1B3022]">گزارش تصویری مراسم شب گذشته</h4>
+                        <p class="text-xs text-gray-400 mt-2">۱۴۰۳/۰۶/۲۷ | گزارش</p>
+                    </div>
+                    <div class="w-16 h-16 rounded-2xl bg-gray-100 overflow-hidden">
+                        <img src="{% static 'images/thumb2.jpg' %}" class="object-cover w-full h-full">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add more cards following the same pattern -->
+
+        </div>
+    </section>
+</div>
+{% endblock %}

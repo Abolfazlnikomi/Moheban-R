@@ -1,0 +1,23 @@
+{% extends "registrations_campaigns/layout.html" %}
+{% block title %}{{ campaign.title }} | پویش‌ها{% endblock %}
+{% block participation %}
+<article>
+  <h1>{{ campaign.title }}</h1>
+  <p>{{ campaign.public_status }} · {{ campaign.starts_on|date:"Y/m/d" }} تا {{ campaign.ends_on|date:"Y/m/d" }}</p>
+  {% if campaign.banner %}<img src="{% url 'registrations_campaigns:banner' campaign.pk %}" alt="">{% endif %}
+  {{ campaign.description|linebreaks }}
+  {% if campaign.is_open %}
+    {% if campaign.instructions %}
+      <h2>راهنمای مشارکت</h2>
+      {{ campaign.instructions|linebreaks }}
+    {% endif %}
+    {% if form %}
+      <h2>فرم مشارکت</h2>
+      {% include "registrations_campaigns/form.html" with button="ثبت مشارکت" %}
+    {% endif %}
+  {% else %}
+    <p>مشارکت در این پویش در حال حاضر باز نیست.</p>
+  {% endif %}
+</article>
+{% endblock %}
+

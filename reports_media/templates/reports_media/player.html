@@ -1,0 +1,17 @@
+<figure class="asset asset-{{ item.kind }}">
+  {% if item.kind == 'image' %}
+    <a href="{{ source }}" target="_blank" rel="noopener noreferrer"><img src="{{ source }}" alt="{{ item.attachment.caption|default:post.title }}" loading="lazy" referrerpolicy="no-referrer"></a>
+  {% elif item.kind == 'video' %}
+    <video controls playsinline preload="none" src="{{ source }}">مرورگر شما پخش ویدیو را پشتیبانی نمی‌کند.</video>
+  {% elif item.kind == 'audio' %}
+    <audio controls preload="none" src="{{ source }}">مرورگر شما پخش صدا را پشتیبانی نمی‌کند.</audio>
+  {% elif item.kind == 'frame' or item.kind == 'document_frame' %}
+    <iframe src="{{ source }}" title="{{ item.attachment.caption|default:'پخش‌کننده یا نمایشگر رسانه' }}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+  {% endif %}
+  <figcaption>
+    {% if item.attachment.caption %}<span>{{ item.attachment.caption }}</span>{% endif %}
+    {% if item.online_url %}<a href="{{ item.online_url }}" target="_blank" rel="noopener noreferrer">{% if item.kind == 'document' %}باز کردن / دریافت سند{% else %}باز کردن پیوند رسانه{% endif %}</a>{% endif %}
+    {% if local_url %}<a href="{{ local_url }}?download=1">دریافت فایل</a>{% endif %}
+  </figcaption>
+</figure>
+

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}{{ item.title }} | {{ label }}{% endblock %}
+{% block content %}
+<main class="account-panel unit-page">
+  <article>
+    <h1>{{ item.title }}</h1>
+    <p>{{ item.summary }}</p>
+    {{ item.description|linebreaks }}
+    {% if item.units.all %}<p>واحدهای مرتبط: {{ item.units.all|join:"، " }}</p>{% endif %}
+  </article>
+</main>
+{% endblock %}
+

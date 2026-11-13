@@ -1,0 +1,46 @@
+{% extends "night_gatherings/layout.html" %}
+{% block title %}{{ gathering.title }} | تجمعات شبانه{% endblock %}
+{% block gatherings %}
+<a class="back" href="{% url 'night_gatherings:list' %}{{ scope.query }}">بازگشت به تجمعات شبانه</a>
+<article class="detail">
+  <header class="hero">
+    <h1>{{ gathering.title }}</h1>
+    <p><time datetime="{{ gathering.starts_at|date:'c' }}">{{ gathering.starts_at|date:"Y/m/d، H:i" }}</time> · {{ gathering.venue }}</p>
+    <p>واحدها: {{ gathering.units.all|join:"، " }}</p>
+    {% if gathering.guests %}<p>سخنران، مداح یا مهمان: {{ gathering.guests }}</p>{% endif %}
+  </header>
+  {% if gathering.poster %}<img class="detail-cover" src="{% url 'night_gatherings:poster' gathering.pk %}" alt="پوستر {{ gathering.title }}">{% endif %}
+  <div class="prose">{{ gathering.description|linebreaks }}</div>
+  {% if notices %}
+    <section>
+      <h2>اطلاعیه‌ها</h2>
+      {% for notice in notices %}
+        <article id="notice-{{ notice.pk }}">
+          <h3>{{ notice.title }}</h3>
+          <p>{{ notice.starts_at|default:gathering.starts_at|date:"Y/m/d، H:i" }} · {{ notice.venue|default:gathering.venue }}</p>
+          {% if notice.poster %}<img class="detail-cover" src="{% url 'night_gatherings:notice_poster' notice.pk %}" alt="پوستر {{ notice.title }}" loading="lazy">{% endif %}
+          <div class="prose">{{ notice.description|linebreaks }}</div>
+        </article>
+      {% endfor %}
+    </section>
+  {% endif %}
+  {% if report_list %}
+    <section>
+      <h2>گزارش‌ها</h2>
+      {% for report, items in report_list %}
+        <article id="report-{{ report.pk }}">
+          <h3>{{ report.title }}</h3>
+          {% if report.summary %}<p>{{ report.summary }}</p>{% endif %}
+          <div class="prose">{{ report.description|linebreaks }}</div>
+          <div class="gallery">
+            {% for item in items %}
+              {% include "reports_media/player.html" with source=item.source local_url=item.local_url post=report %}
+            {% endfor %}
+          </div>
+        </article>
+      {% endfor %}
+    </section>
+  {% endif %}
+</article>
+{% endblock %}
+

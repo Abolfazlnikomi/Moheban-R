@@ -1,0 +1,14 @@
+{% extends "registrations_campaigns/layout.html" %}
+{% block title %}ثبت‌نام خُدام{% endblock %}
+{% block participation %}
+<section>
+  <h1>ثبت‌نام خُدام</h1>
+  {% if form %}
+  <p>درخواست شما برای بررسی توسط مسئولان خادمی ثبت می‌شود و حساب کاربری ایجاد نمی‌کند.</p>
+  {% include "registrations_campaigns/form.html" with button="ثبت درخواست خادمی" %}
+  {% else %}
+  <p>ثبت‌نام خُدام در حال حاضر باز نیست.</p>
+  {% endif %}
+</section>
+{% endblock %}
+

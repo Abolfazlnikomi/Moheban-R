@@ -1,3 +1,6 @@
+/media/reports_media/
+/media/campaign_banners/
+/media/night_gatherings/
 .venv/
 venv/
 __pycache__/

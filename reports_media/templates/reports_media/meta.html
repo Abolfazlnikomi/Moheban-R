@@ -1,0 +1,9 @@
+<dl class="meta">
+  <div><dt>مراسم</dt><dd><time datetime="{{ post.event_date|date:'Y-m-d' }}">{{ post.event_date|date:"Y/m/d" }}</time></dd></div>
+  <div><dt>انتشار</dt><dd><time datetime="{{ post.published_at|date:'c' }}">{{ post.published_at|date:"Y/m/d" }}</time></dd></div>
+  <div><dt>دسته‌بندی</dt><dd>{{ post.category }}</dd></div>
+  <div><dt>نوع محتوا</dt><dd>{{ post.get_kind_display }}</dd></div>
+  {% if post.events.all %}<div><dt>رویداد</dt><dd>{{ post.events.all|join:"، " }}</dd></div>{% endif %}
+  {% if post.units.all %}<div><dt>بخش‌های مرتبط</dt><dd>{{ post.units.all|join:"، " }}</dd></div>{% endif %}
+</dl>
+

@@ -4,11 +4,64 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}Moheban{% endblock %}</title>
+    <title>{% block title %}محبان{% endblock %}</title>
+
+    <link rel="stylesheet" href="{% static 'site/accounts.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
 <body>
+    <header class="site-header">
+        <div class="site-header-inner">
+            <a class="site-brand" href="{% url 'home' %}{{ scope.query }}">
+                <span class="site-brand-icon" aria-hidden="true">☾</span>
+                <span>محبان</span>
+            </a>
+
+            <nav class="site-nav" aria-label="ناوبری اصلی">
+                <a href="{% url 'home' %}{{ scope.query }}">خانه</a>
+                <a href="{% url 'announcements:list' %}{{ scope.query }}">اطلاعیه‌ها</a>
+                <a href="{% url 'reports_media:archive' %}{{ scope.query }}">گزارش‌ها</a>
+                <a href="{% url 'publications:list' %}{{ scope.query }}">نشریات</a>
+                <a href="{% url 'night_gatherings:list' %}{{ scope.query }}">تجمعات شبانه</a>
+                <a href="{% url 'registrations_campaigns:campaigns' %}{{ scope.query }}">پویش‌ها</a>
+
+                {% if menu_scope.options %}
+                    <details class="site-units">
+                        <summary>واحدها</summary>
+                        <div class="site-units-menu">
+                            <a href="{% url 'home' %}">همهٔ واحدها</a>
+                            {% for option in menu_scope.options %}
+                                <a href="{% url 'home' %}?unit={{ option.id }}"
+                                   {% if menu_scope.selected == option.id %}aria-current="true"{% endif %}>
+                                    {{ option.menu_label }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </details>
+                {% endif %}
+            </nav>
+
+            <div class="site-header-actions">
+                <a class="site-volunteer-link"
+                   href="{% url 'registrations_campaigns:volunteer' %}{{ scope.query }}">
+                    ثبت‌نام خُدام
+                </a>
+
+                {% if user.is_authenticated %}
+                    <a class="site-login-link" href="{% url 'account' %}">حساب کاربری</a>
+                    <form class="site-logout-form" method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="site-login-link">خروج</button>
+                    </form>
+                {% else %}
+                    <a class="site-login-link" href="{% url 'login' %}">ورود</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
     {% block content %}{% endblock %}
+
     {% block extra_js %}{% endblock %}
 </body>
 </html>

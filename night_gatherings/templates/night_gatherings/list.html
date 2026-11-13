@@ -1,0 +1,51 @@
+{% extends "night_gatherings/layout.html" %}
+{% block title %}تجمعات شبانه{% endblock %}
+{% block gatherings %}
+<header class="hero">
+  <h1>تجمعات شبانه</h1>
+  <p>اطلاعیه‌ها و گزارش‌های تجمعات خوابگاه‌ها و واحدهای هیئت</p>
+</header>
+<form method="get" class="filters unit-filter">
+  {% if archived %}<input type="hidden" name="show" value="archive">{% endif %}
+  {% include "dorm_heiat/unit_select.html" %}
+  <button type="submit">اعمال فیلتر</button>
+</form>
+{% with selected=scope.selected %}
+<nav class="pages" aria-label="بازهٔ تجمعات">
+  <a href="{% url 'night_gatherings:list' %}{{ scope.query }}"{% if not archived %} aria-current="page"{% endif %}>پیش‌رو</a>
+  <a href="?show=archive{% if selected %}&amp;unit={{ selected }}{% endif %}"{% if archived %} aria-current="page"{% endif %}>آرشیو برگزارشده‌ها</a>
+</nav>
+{% endwith %}
+<h2>{% if archived %}تجمعات برگزارشده{% else %}تجمعات پیش‌رو{% endif %}</h2>
+<div class="cards">
+  {% for gathering in page %}
+    <article class="card">
+      {% if gathering.poster %}<img class="card-cover" src="{% url 'night_gatherings:poster' gathering.pk %}" alt="" loading="lazy">{% endif %}
+      <div class="card-body">
+        <h2><a href="{{ gathering.get_absolute_url }}{{ scope.query }}">{{ gathering.title }}</a></h2>
+        <p><time datetime="{{ gathering.starts_at|date:'c' }}">{{ gathering.starts_at|date:"Y/m/d، H:i" }}</time> · {{ gathering.venue }}</p>
+        <p>{{ gathering.units.all|join:"، " }}</p>
+        {% if archived %}
+          {% for report in gathering.reports.all %}
+            <p><a href="{{ gathering.get_absolute_url }}{{ scope.query }}#report-{{ report.pk }}">{{ report.title }}</a></p>
+          {% endfor %}
+        {% else %}
+          {% for notice in gathering.notices.all %}
+            <p><a href="{{ gathering.get_absolute_url }}{{ scope.query }}#notice-{{ notice.pk }}">{{ notice.title }}</a></p>
+          {% endfor %}
+        {% endif %}
+      </div>
+    </article>
+  {% empty %}
+    <p>تجمعی مطابق این فیلتر پیدا نشد.</p>
+  {% endfor %}
+</div>
+{% if page.has_other_pages %}
+  <nav class="pages" aria-label="صفحه‌بندی">
+    {% if page.has_previous %}<a href="?page={{ page.previous_page_number }}{% if archived %}&amp;show=archive{% endif %}{% if scope.selected %}&amp;unit={{ scope.selected }}{% endif %}">صفحهٔ قبل</a>{% endif %}
+    <span>{{ page.number }} از {{ page.paginator.num_pages }}</span>
+    {% if page.has_next %}<a href="?page={{ page.next_page_number }}{% if archived %}&amp;show=archive{% endif %}{% if scope.selected %}&amp;unit={{ scope.selected }}{% endif %}">صفحهٔ بعد</a>{% endif %}
+  </nav>
+{% endif %}
+{% endblock %}
+

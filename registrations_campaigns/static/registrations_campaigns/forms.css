@@ -1,0 +1,18 @@
+body { margin: 0; background: #f3f6f3; color: #20352c; font: 1rem/1.8 Tahoma, Arial, sans-serif; }
+.participation, .participation * { box-sizing: border-box; }
+.participation { width: min(70rem, calc(100% - 2rem)); margin: 2rem auto; overflow-wrap: anywhere; }
+.participation a { color: #12624a; text-underline-offset: .2em; }
+.participation nav { margin-bottom: 1rem; }
+.participation article, .participation section { background: white; border: 1px solid #d4e2db; padding: clamp(1rem, 4vw, 2rem); border-radius: 1rem; }
+.participation h1, .participation h2 { line-height: 1.5; margin-block-start: 0; }
+.participation img { display: block; max-width: 100%; max-height: 32rem; object-fit: contain; }
+.campaigns { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr)); gap: 1rem; margin-bottom: 1rem; }
+.participation form { max-width: 38rem; }
+.participation .field { margin-bottom: 1rem; }
+.participation label { font-weight: bold; }
+.participation input, .participation textarea, .participation select { display: block; width: 100%; min-height: 2.75rem; font: inherit; border: 1px solid #8fa59a; border-radius: .5rem; padding: .4rem .7rem; }
+.participation button { border: 0; padding: .6rem 1rem; border-radius: .5rem; background: #12624a; color: white; font: inherit; cursor: pointer; }
+.participation :focus-visible { outline: 3px solid #ab6b15; outline-offset: 2px; }
+.participation .notice { padding: .75rem 1rem; background: #e0f1e5; border-radius: .5rem; }
+.participation .errorlist { color: #9b1a2a; }
+

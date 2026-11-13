@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}پنل کاربری{% endblock %}
+{% block content %}
+<main class="account-panel{% if management_modules %} account-dashboard{% endif %}">
+  <h1>پنل کاربری من</h1>
+  <p>نام کاربری: <bdi>{{ user.get_username }}</bdi></p>
+  <a href="{% url 'password_change' %}">تغییر رمز عبور</a>
+  {% if management_modules %}
+    <section aria-labelledby="management-heading">
+      <h2 id="management-heading">دسترسی‌های مدیریتی من</h2>
+      <p>{{ management_level }} · ابزارهای مجاز را از همین پنل باز کنید.</p>
+      <div class="account-modules">
+        {% for module in management_modules %}
+          <section class="account-module">
+            <h3>{{ module.name }}</h3>
+            <ul>
+              {% for entry in module.models %}
+                <li>
+                  <strong>{{ entry.name }}</strong>
+                  <span class="account-permissions">{{ entry.actions|join:"، " }}</span>
+                  <div class="account-management-links">
+                    {% if entry.admin_url %}
+                      <a href="{{ entry.admin_url }}" target="account-workspace" data-workspace-link
+                         aria-label="باز کردن فهرست {{ entry.name }}">باز کردن فهرست</a>
+                    {% endif %}
+                    {% if entry.add_url %}
+                      <a href="{{ entry.add_url }}" target="account-workspace" data-workspace-link
+                         aria-label="افزودن به {{ entry.name }}">افزودن</a>
+                    {% endif %}
+                  </div>
+                </li>
+              {% endfor %}
+            </ul>
+          </section>
+        {% endfor %}
+      </div>
+    </section>
+    <section id="account-workspace" class="account-workspace" aria-labelledby="workspace-heading">
+      <h2 id="workspace-heading" tabindex="-1">میز کار مدیریت</h2>
+      <iframe name="account-workspace" title="میز کار مدیریت" src="about:blank"></iframe>
+    </section>
+  {% endif %}
+</main>
+{% endblock %}
+{% block extra_js %}
+  {% if management_modules %}<script src="{% static 'site/account-workspace.js' %}" defer></script>{% endif %}
+{% endblock %}

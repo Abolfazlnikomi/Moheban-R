@@ -1,0 +1,39 @@
+{% extends "reports_media/shell.html" %}
+{% block title %}گزارش‌ها و آرشیو رسانه{% endblock %}
+{% block reports %}
+<header class="hero">
+  <h1>گزارش‌ها و آرشیو رسانه</h1>
+  <p>گزارش مراسم‌ها، گالری تصاویر و آرشیو صوتی و تصویری هیئت‌ها</p>
+</header>
+<form method="get" class="filters" aria-label="فیلترهای آرشیو">
+  {% include "dorm_heiat/unit_select.html" %}
+  <div class="filter-grid">
+  {% for field in form %}
+    <div>{{ field.label_tag }}{{ field }}{{ field.errors }}</div>
+  {% endfor %}
+  </div>
+  <div class="actions"><button type="submit">جست‌وجو و اعمال فیلتر</button><a href="{% url 'reports_media:archive' %}">پاک کردن فیلترها</a></div>
+</form>
+<section aria-label="نتایج آرشیو" class="cards">
+{% for post in page %}
+  <article class="card">
+    {% if post.cover %}<img class="card-cover" src="{% url 'reports_media:cover' post.pk %}" alt="" loading="lazy">{% endif %}
+    <div class="card-body">
+      {% if post.status == 'archived' %}<span class="badge">بایگانی‌شده</span>{% endif %}
+      <h2><a href="{{ post.get_absolute_url }}{{ scope.query }}">{{ post.title }}</a></h2>
+      <p>{{ post.summary }}</p>
+      {% include "reports_media/meta.html" %}
+    </div>
+  </article>
+{% empty %}
+  <p class="empty">محتوایی مطابق این معیارها پیدا نشد.</p>
+{% endfor %}
+</section>
+{% if page.has_other_pages %}
+<nav class="pages" aria-label="صفحه‌بندی آرشیو">
+  {% if page.has_previous %}<a href="?{% if params %}{{ params }}&amp;{% endif %}page={{ page.previous_page_number }}" rel="prev">صفحهٔ قبل</a>{% endif %}
+  <span>صفحهٔ {{ page.number }} از {{ page.paginator.num_pages }}</span>
+  {% if page.has_next %}<a href="?{% if params %}{{ params }}&amp;{% endif %}page={{ page.next_page_number }}" rel="next">صفحهٔ بعد</a>{% endif %}
+</nav>
+{% endif %}
+{% endblock %}

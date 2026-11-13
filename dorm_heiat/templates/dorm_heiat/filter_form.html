@@ -1,0 +1,6 @@
+<form method="get" class="unit-filter">
+  {% include "dorm_heiat/unit_select.html" %}
+  <button type="submit">اعمال فیلتر</button>
+  {% if scope.selected %}<a href="{{ request.path }}">نمایش همه</a>{% endif %}
+</form>
+
