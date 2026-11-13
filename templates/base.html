@@ -1,67 +1,146 @@
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta name="theme-color" content="#102f27">
+    <meta name="description" content="محبان؛ پایگاه فرهنگی و مذهبی">
+
     <title>{% block title %}محبان{% endblock %}</title>
 
+    <link rel="stylesheet" href="{% static 'site/fonts.css' %}">
     <link rel="stylesheet" href="{% static 'site/accounts.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
-<body>
-    <header class="site-header">
-        <div class="site-header-inner">
-            <a class="site-brand" href="{% url 'home' %}{{ scope.query }}">
-                <span class="site-brand-icon" aria-hidden="true">☾</span>
-                <span>محبان</span>
+
+<body class="mohban-site{% block body_class %}{% endblock %}">
+
+{% block site_header %}
+<header class="site-header">
+    <div class="site-header-inner">
+
+        <a class="site-brand" href="{% url 'home' %}{{ scope.query }}">
+            <span class="site-brand-icon" aria-hidden="true">
+                <svg viewBox="0 0 40 40" fill="none">
+                    <path d="M20 3C18 11 7 13 7 23v12h26V23C33 13 22 11 20 3Z"
+                          stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M20 13v13m-6.5-6.5h13"
+                          stroke="currentColor" stroke-width="1.5"/>
+                    <circle cx="20" cy="20" r="2" fill="currentColor"/>
+                </svg>
+            </span>
+
+            <span class="brand-content">
+                <strong>محبان</strong>
+                <small>پایگاه فرهنگی و مذهبی</small>
+            </span>
+        </a>
+
+        <button class="mobile-menu-toggle"
+                type="button"
+                aria-label="منوی اصلی"
+                aria-controls="site-nav"
+                aria-expanded="false"
+                onclick="document.querySelector('.site-nav').classList.toggle('is-open'); this.setAttribute('aria-expanded', document.querySelector('.site-nav').classList.contains('is-open'));">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <nav class="site-nav" id="site-nav" aria-label="ناوبری اصلی">
+
+            <a href="{% url 'home' %}{{ scope.query }}"
+               {% if request.resolver_match.url_name == 'home' %}
+               aria-current="page"
+               {% endif %}>
+                خانه
             </a>
 
-            <nav class="site-nav" aria-label="ناوبری اصلی">
-                <a href="{% url 'home' %}{{ scope.query }}">خانه</a>
-                <a href="{% url 'announcements:list' %}{{ scope.query }}">اطلاعیه‌ها</a>
-                <a href="{% url 'reports_media:archive' %}{{ scope.query }}">گزارش‌ها</a>
-                <a href="{% url 'publications:list' %}{{ scope.query }}">نشریات</a>
-                <a href="{% url 'night_gatherings:list' %}{{ scope.query }}">تجمعات شبانه</a>
-                <a href="{% url 'registrations_campaigns:campaigns' %}{{ scope.query }}">پویش‌ها</a>
+            <a href="{% url 'announcements:list' %}{{ scope.query }}">
+                اطلاعیه‌ها
+            </a>
 
-                {% if menu_scope.options %}
-                    <details class="site-units">
-                        <summary>واحدها</summary>
-                        <div class="site-units-menu">
-                            <a href="{% url 'home' %}">همهٔ واحدها</a>
-                            {% for option in menu_scope.options %}
-                                <a href="{% url 'home' %}?unit={{ option.id }}"
-                                   {% if menu_scope.selected == option.id %}aria-current="true"{% endif %}>
-                                    {{ option.menu_label }}
-                                </a>
-                            {% endfor %}
-                        </div>
-                    </details>
-                {% endif %}
-            </nav>
+            <a href="{% url 'reports_media:archive' %}{{ scope.query }}">
+                گزارش‌ها
+            </a>
 
-            <div class="site-header-actions">
-                <a class="site-volunteer-link"
-                   href="{% url 'registrations_campaigns:volunteer' %}{{ scope.query }}">
-                    ثبت‌نام خُدام
+            <a href="{% url 'publications:list' %}{{ scope.query }}">
+                نشریات
+            </a>
+
+            <a href="{% url 'night_gatherings:list' %}{{ scope.query }}">
+                تجمعات شبانه
+            </a>
+
+            <a href="{% url 'registrations_campaigns:campaigns' %}{{ scope.query }}">
+                پویش‌ها
+            </a>
+
+            {% if menu_scope.options %}
+            <details class="site-menu">
+                <summary>واحدها <span>⌄</span></summary>
+
+                <div class="site-units-menu">
+                    <a href="{% url 'home' %}">
+                        همهٔ واحدها
+                    </a>
+
+                    {% for option in menu_scope.options %}
+                    <a href="{% url 'home' %}?unit={{ option.id }}"{% if menu_scope.selected == option.id %} aria-current="true"{% endif %}>{{ option.menu_label }}</a>
+                    {% endfor %}
+                </div>
+            </details>
+            {% endif %}
+
+        </nav>
+
+        <div class="site-header-actions">
+
+            <a class="site-volunteer-link"
+               href="{% url 'registrations_campaigns:volunteer' %}{{ scope.query }}">
+                <span>✧</span>
+                ثبت‌نام خُدام
+            </a>
+
+            {% if user.is_authenticated %}
+
+                <a class="site-login-link" href="{% url 'account' %}">
+                    حساب کاربری
                 </a>
 
-                {% if user.is_authenticated %}
-                    <a class="site-login-link" href="{% url 'account' %}">حساب کاربری</a>
-                    <form class="site-logout-form" method="post" action="{% url 'logout' %}">
-                        {% csrf_token %}
-                        <button type="submit" class="site-login-link">خروج</button>
-                    </form>
-                {% else %}
-                    <a class="site-login-link" href="{% url 'login' %}">ورود</a>
-                {% endif %}
-            </div>
+                <form class="site-logout-form"
+                      method="post"
+                      action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="site-login-link">
+                        خروج
+                    </button>
+                </form>
+
+            {% else %}
+
+                <a class="site-login-link" href="{% url 'login' %}">
+                    ورود
+                </a>
+
+            {% endif %}
+
         </div>
-    </header>
 
+    </div>
+</header>
+{% endblock %}
+
+<main class="site-main">
     {% block content %}{% endblock %}
+</main>
 
-    {% block extra_js %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block extra_js %}{% endblock %}
+
 </body>
 </html>

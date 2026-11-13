@@ -1,97 +1,144 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}صفحهٔ اصلی | محبان{% endblock %}
+{% block title %}هیئت محبان اهل‌بیت علیهم‌السلام{% endblock %}
+{% block body_class %} landing-page{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'site/landing.css' %}">{% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-[#FDFBF1] font-['Vazirmatn'] text-[#2D3E33] text-right" dir="rtl">
-
-    <!-- Hero Section -->
-    <section class="relative overflow-hidden bg-[#FDFBF1] pt-12 pb-20 px-6 md:px-12">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-12">
-            <!-- Text Content -->
-            <div class="flex-1 space-y-8 z-10">
-                <div class="space-y-2">
-                    <p class="text-[#C5A267] text-lg font-medium">به محبان خوش آمدید</p>
-                    <h1 class="text-6xl md:text-7xl font-bold text-[#1B3022] leading-tight">با هم، برای هم</h1>
-                </div>
-                <p class="text-xl text-[#4A5D50] leading-relaxed max-w-lg">
-                    خبرهای هیئت را دنبال کنید، لحظه‌های مراسم را دوباره ببینید و در پویش‌ها یا خادمی همراه ما شوید.
-                </p>
-                <div class="flex flex-wrap gap-4 pt-4">
-                    <a href="{% url 'registrations_campaigns:volunteer' %}" class="bg-[#1B3022] text-white px-8 py-4 rounded-2xl flex items-center gap-2 hover:bg-[#2D4533] transition-all shadow-lg">
-                        <span>ثبت‌نام خُدام</span>
-                    </a>
-                    <a href="#content" class="border-2 border-[#1B3022] text-[#1B3022] px-8 py-4 rounded-2xl hover:bg-[#1B3022] hover:text-white transition-all">
-                        مرور بخش‌ها
-                    </a>
-                </div>
-            </div>
-
-            <!-- Image/Art Part (Using the generated style) -->
-            <div class="flex-1 relative">
-                <div class="rounded-[40px] overflow-hidden shadow-2xl border-4 border-white">
-                    <img src="{% static 'images/hero_image.jpg' %}" alt="محبان" class="w-full h-[450px] object-cover">
-                </div>
-                <!-- Decorative element -->
-                <div class="absolute -bottom-6 -right-6 w-32 h-32 bg-[#C5A267]/20 rounded-full blur-3xl"></div>
+<div class="landing">
+    <section class="landing-hero" id="top" aria-labelledby="hero-title">
+        <img class="landing-hero-photo" src="{% static 'site/courtyard-hero.webp' %}" width="1536" height="1024" fetchpriority="high" alt="">
+        <div class="landing-wrap landing-hero-inner">
+            <p class="landing-kicker landing-hero-kicker">به نام خداوند بخشندهٔ مهربان</p>
+            <h1 id="hero-title">هیئت محبان <span>اهل‌بیت</span> <small>علیهم‌السلام</small></h1>
+            <p class="landing-hero-lead">جایی برای با هم بودن؛ در مجلس اهل‌بیت، در معرفت و در خدمت.</p>
+            <div class="landing-actions">
+                <a class="landing-button landing-button-primary" href="#about">آشنایی با محبان <span aria-hidden="true">↓</span></a>
+                <a class="landing-button landing-button-glass" href="{% url 'night_gatherings:list' %}{{ scope.query }}">برنامهٔ جلسات <span aria-hidden="true">←</span></a>
             </div>
         </div>
     </section>
 
-    <!-- Search/Filter Bar -->
-    <div id="content" class="max-w-7xl mx-auto -mt-10 px-6">
-        <div class="bg-white rounded-3xl shadow-xl p-2 flex items-center gap-4 border border-[#E5E7EB]">
-            <div class="p-4"><svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></div>
-            <select class="flex-1 bg-transparent border-none focus:ring-0 text-lg py-4 text-gray-600">
-                <option>جست‌وجو بر اساس خوابگاه یا واحد</option>
-                <option>خوابگاه حافظ</option>
-                <option>واحد برادران</option>
-            </select>
+    <section class="landing-wrap landing-about landing-reveal" id="about" aria-labelledby="about-title">
+        <div>
+            <p class="landing-kicker">معرفی سایت</p>
+            <h2 id="about-title">محبان در یک نگاه</h2>
         </div>
+        <div class="landing-about-copy">
+            <p>این سایت خانهٔ آنلاین هیئت محبان اهل‌بیت است. اینجا می‌توانید زمان و مکان جلسات را پیدا کنید، گزارش مراسم و نشریات هیئت را ببینید و برای خادمی یا شرکت در پویش‌ها قدم اول را بردارید.</p>
+            <a class="landing-link" href="#content">دیدن بخش‌های سایت <span aria-hidden="true">↓</span></a>
+        </div>
+    </section>
+
+    <div class="landing-updates">
+        <section class="landing-wrap landing-section" id="content" aria-labelledby="content-title">
+            <div class="landing-section-heading">
+                <div>
+                    <p class="landing-kicker">اخبار و فعالیت‌ها</p>
+                    <h2 id="content-title">تازه‌های محبان</h2>
+                </div>
+                {% include "dorm_heiat/filter_form.html" with filter_action="#content" %}
+            </div>
+            <div class="landing-grid">
+                {% for label, route, items in sections %}
+                    {% url route as archive_url %}
+                    <article class="landing-card landing-reveal">
+                        <div class="landing-card-top">
+                            <svg class="landing-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                {% if route == 'announcements:list' %}
+                                    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/>
+                                {% elif route == 'reports_media:archive' %}
+                                    <rect x="3" y="5" width="18" height="14" rx="2"/><path d="m10 9 5 3-5 3z"/>
+                                {% elif route == 'publications:list' %}
+                                    <path d="M12 6c-3-2-6-2-9-1v14c3-1 6-1 9 1 3-2 6-2 9-1V5c-3-1-6-1-9 1v14"/>
+                                {% else %}
+                                    <path d="M20 5a4.5 4.5 0 0 0-6.4 0L12 6.6 10.4 5A4.5 4.5 0 0 0 4 11.4l8 8 8-8A4.5 4.5 0 0 0 20 5Z"/>
+                                {% endif %}
+                            </svg>
+                        </div>
+                        <h3>{{ label }}</h3>
+                        {% if items %}
+                            <ul class="landing-list">
+                                {% for item in items %}
+                                    <li><a href="{{ item.get_absolute_url }}{{ scope.query }}">{{ item.title }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p class="landing-empty">هنوز محتوایی در این بخش منتشر نشده است.</p>
+                        {% endif %}
+                        <a class="landing-link landing-card-link" href="{{ archive_url }}{{ scope.query }}" aria-label="مشاهدهٔ همهٔ {{ label }}">مشاهدهٔ همه <span aria-hidden="true">←</span></a>
+                    </article>
+                {% endfor %}
+            </div>
+
+            <section class="landing-gatherings landing-reveal" aria-labelledby="gatherings-title">
+                <div class="landing-gatherings-heading">
+                    <p class="landing-kicker">قرارهای هیئت</p>
+                    <h2 id="gatherings-title">تجمعات شبانه</h2>
+                </div>
+                <div class="landing-gatherings-column">
+                    <h3>جلسات پیش‌ رو</h3>
+                    <ul class="landing-list">
+                        {% for gathering in upcoming_gatherings %}
+                            <li>
+                                <a href="{{ gathering.get_absolute_url }}{{ scope.query }}">{{ gathering.title }}</a>
+                                {% for notice in gathering.notices.all %}<span>{{ notice.title }}</span>{% endfor %}
+                            </li>
+                        {% empty %}
+                            <li class="landing-empty">هنوز جلسه‌ای اعلام نشده است.</li>
+                        {% endfor %}
+                    </ul>
+                    <a class="landing-link" href="{% url 'night_gatherings:list' %}{{ scope.query }}">همهٔ جلسات <span aria-hidden="true">←</span></a>
+                </div>
+                <div class="landing-gatherings-column">
+                    <h3>جلسات برگزارشده</h3>
+                    <ul class="landing-list">
+                        {% for gathering in held_gatherings %}
+                            <li>
+                                <a href="{{ gathering.get_absolute_url }}{{ scope.query }}">{{ gathering.title }}</a>
+                                {% for report in gathering.reports.all %}<span>{{ report.title }}</span>{% endfor %}
+                            </li>
+                        {% empty %}
+                            <li class="landing-empty">هنوز گزارشی برای جلسات ثبت نشده است.</li>
+                        {% endfor %}
+                    </ul>
+                    <a class="landing-link" href="{% url 'night_gatherings:list' %}?show=archive{% if scope.selected %}&amp;unit={{ scope.selected|urlencode }}{% endif %}">آرشیو جلسات <span aria-hidden="true">←</span></a>
+                </div>
+            </section>
+        </section>
     </div>
 
-    <!-- Content Grid -->
-    <section class="max-w-7xl mx-auto py-20 px-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-
-            <!-- Card: Announcements -->
-            <div class="bg-white rounded-[32px] overflow-hidden shadow-md border border-[#F0F0F0] hover:shadow-xl transition-all">
-                <div class="bg-[#1B3022] p-4 flex justify-between items-center text-white">
-                    <span class="font-bold">اطلاعیه‌ها</span>
-                    <svg class="w-6 h-6 text-[#C5A267]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
-                </div>
-                <div class="p-6 flex items-center gap-4">
-                    <div class="flex-1">
-                        <h4 class="font-bold text-[#1B3022]">اطلاعیه مهم مراسم</h4>
-                        <p class="text-xs text-gray-400 mt-2">۱۴۰۳/۰۶/۲۸ | اطلاعیه</p>
-                    </div>
-                    <div class="w-16 h-16 rounded-2xl bg-gray-100 overflow-hidden">
-                        <img src="{% static 'images/thumb1.jpg' %}" class="object-cover w-full h-full">
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card: Reports -->
-            <div class="bg-white rounded-[32px] overflow-hidden shadow-md border border-[#F0F0F0] hover:shadow-xl transition-all">
-                <div class="bg-[#1B3022] p-4 flex justify-between items-center text-white">
-                    <span class="font-bold">گزارش‌ها و تصاویر</span>
-                    <svg class="w-6 h-6 text-[#C5A267]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg>
-                </div>
-                <div class="p-6 flex items-center gap-4">
-                    <div class="flex-1">
-                        <h4 class="font-bold text-[#1B3022]">گزارش تصویری مراسم شب گذشته</h4>
-                        <p class="text-xs text-gray-400 mt-2">۱۴۰۳/۰۶/۲۷ | گزارش</p>
-                    </div>
-                    <div class="w-16 h-16 rounded-2xl bg-gray-100 overflow-hidden">
-                        <img src="{% static 'images/thumb2.jpg' %}" class="object-cover w-full h-full">
-                    </div>
-                </div>
-            </div>
-
-            <!-- Add more cards following the same pattern -->
-
+    <section class="landing-wrap landing-service landing-reveal" aria-labelledby="service-title">
+        <div>
+            <p class="landing-kicker">خادمی در هیئت</p>
+            <h2 id="service-title">در برپایی مجلس همراه ما باشید</h2>
+            <p>اگر دوست دارید در اجرای مراسم و فعالیت‌های فرهنگی کمک کنید، برای خادمی ثبت‌نام کنید.</p>
         </div>
+        <a class="landing-button landing-button-dark" href="{% url 'registrations_campaigns:volunteer' %}{{ scope.query }}">ثبت‌نام خُدام <span aria-hidden="true">←</span></a>
     </section>
 </div>
+{% endblock %}
+
+{% block footer %}
+<footer class="landing-footer">
+    <div class="landing-wrap">
+        <div class="landing-footer-main">
+            <div>
+                <a class="landing-footer-brand" href="{% url 'home' %}{{ scope.query }}">هیئت محبان اهل‌بیت علیهم‌السلام</a>
+                <p class="landing-salawat" lang="ar">اللَّهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ وَآلِ مُحَمَّدٍ</p>
+            </div>
+            <nav aria-label="پیوندهای پایین صفحه">
+                <a href="#about">معرفی سایت</a>
+                <a href="{% url 'announcements:list' %}{{ scope.query }}">اطلاعیه‌ها</a>
+                <a href="{% url 'reports_media:archive' %}{{ scope.query }}">گزارش‌ها</a>
+                <a href="{% url 'registrations_campaigns:campaigns' %}{{ scope.query }}">پویش‌ها</a>
+            </nav>
+        </div>
+        <div class="landing-footer-bottom">
+            <span>پایگاه فرهنگی و مذهبی محبان</span>
+            <a href="#top">بازگشت به بالای صفحه <span aria-hidden="true">↑</span></a>
+        </div>
+    </div>
+</footer>
 {% endblock %}

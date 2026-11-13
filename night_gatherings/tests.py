@@ -78,10 +78,10 @@ class GatheringTests(TestCase):
         add_url = reverse('staff_panel:night_gatherings_gathering_add')
         data = {
             'title': 'New gathering', 'description': 'Description', 'venue': 'Hall',
-            'starts_at_0': '2026-11-20', 'starts_at_1': '20:00:00', 'status': 'published',
+            'starts_at': '2026-11-20T20:00:00', 'status': 'published',
         }
         response = self.client.post(add_url, data)
-        self.assertIn('units', response.context['adminform'].form.errors)
+        self.assertIn('units', response.context['form'].errors)
         self.assertEqual(self.client.post(add_url, {**data, 'units': [self.child.pk]}).status_code, 302)
         gathering = Gathering.objects.get(title='New gathering')
         self.assertEqual(gathering.status, Gathering.Status.DRAFT)

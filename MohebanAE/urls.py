@@ -4,7 +4,6 @@ from django.urls import include, path
 from dorm_heiat.views import home
 
 from .account_views import AccountView, SiteLogoutView
-from .admin_access import staff_panel
 
 urlpatterns = [
     path('', home, name='home'),
@@ -18,7 +17,7 @@ urlpatterns = [
         template_name='accounts/password_change_done.html',
     ), name='password_change_done'),
     path('admin/', admin.site.urls),
-    path('staff/', staff_panel.urls),
+    path('staff/', include('MohebanAE.workspace_urls')),
     path('reports/', include('reports_media.urls')),
     path('announcements/', include('announcements.urls')),
     path('publications/', include('publications.urls')),

@@ -4,7 +4,6 @@ from django.contrib import admin
 from django.contrib.admin.forms import AdminAuthenticationForm
 from django.apps import apps
 from django.core.exceptions import ValidationError
-from django.views.decorators.clickjacking import xframe_options_sameorigin
 
 from .admin_roles import FULL_ADMIN_GROUP, is_full_admin
 
@@ -49,32 +48,6 @@ class SiteAdmin(admin.AdminSite):
 
     def has_permission(self, request):
         return super().has_permission(request) and request.user.is_superuser
-
-
-class StaffPanelLoginForm(SiteAdminLoginForm):
-    def get_admin_site(self):
-        return staff_panel
-
-
-class StaffPanel(admin.AdminSite):
-    login_form = StaffPanelLoginForm
-    site_header = 'پنل ادمین و کاربران مجاز محبان'
-    site_title = 'پنل ادمین'
-    index_title = 'بخش‌های در دسترس شما'
-
-    def admin_view(self, view, cacheable=False):
-        return xframe_options_sameorigin(super().admin_view(view, cacheable))
-
-    def has_permission(self, request):
-        return super().has_permission(request) and (
-            request.user.is_superuser or any(
-                any(model_admin.get_model_perms(request).values())
-                for model_admin in self._registry.values()
-            )
-        )
-
-
-staff_panel = StaffPanel(name='staff_panel')
 
 
 class ManageAccounts:

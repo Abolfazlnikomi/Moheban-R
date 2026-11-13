@@ -1,0 +1,11 @@
+@font-face {
+    font-family: Vazirmatn;
+    src: url("Vazirmatn.woff2") format("woff2");
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+}
+
+:root { --site-font: Vazirmatn, Tahoma, Arial, sans-serif; }
+body { margin: 0; font-family: var(--site-font); }
+button, input, select, textarea { font: inherit; }

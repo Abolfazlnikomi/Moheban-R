@@ -1,0 +1,36 @@
+{% extends "workspace/base.html" %}
+{% block workspace %}
+<header class="member-hero workspace-hero">
+  <div>
+    <p class="member-kicker">{{ resource.title }}</p>
+    <h1>{{ object }}</h1>
+  </div>
+  <div class="workspace-actions">
+    {% if change_url %}<a class="member-button member-button-glass" href="{{ change_url }}">ویرایش</a>{% endif %}
+    {% if password_url %}<a class="member-button member-button-glass" href="{{ password_url }}">تنظیم رمز عبور</a>{% endif %}
+    {% if export_url %}<a class="member-button member-button-glass" href="{{ export_url }}">خروجی اکسل مشارکت‌کنندگان</a>{% endif %}
+  </div>
+</header>
+<section class="member-glass workspace-panel" aria-labelledby="workspace-details">
+  <h2 id="workspace-details">جزئیات</h2>
+  <dl class="workspace-details">
+    {% for field in fields %}
+      <div>
+        <dt>{{ field.label }}</dt>
+        <dd>
+          {% if field.url %}<a href="{{ field.url }}">{{ field.value }}</a>
+          {% elif field.answers %}<ul>{% for answer in field.answers %}<li><strong>{{ answer.label }}:</strong> {{ answer.value }}</li>{% endfor %}</ul>
+          {% elif field.value or field.value == 0 %}{{ field.value }}
+          {% else %}—{% endif %}
+        </dd>
+      </div>
+    {% endfor %}
+  </dl>
+  {% if related or delete_url %}
+    <div class="workspace-actions">
+      {% for item in related %}<a class="member-button member-button-primary" href="{{ item.url }}">{{ item.name }}</a>{% endfor %}
+      {% if delete_url %}<a class="member-button workspace-danger" href="{{ delete_url }}">حذف مورد</a>{% endif %}
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

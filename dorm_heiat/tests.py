@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth import get_user_model
+from django.contrib.staticfiles import finders
 from django.core.exceptions import ValidationError
+from django.templatetags.static import static
 from django.test import RequestFactory, TestCase
 from django.utils import timezone
 
@@ -29,8 +31,22 @@ class UnitTests(TestCase):
     def test_home_renders_landing_and_menu_without_content(self):
         response = self.client.get('/')
         self.assertContains(response, '<details class="site-menu">')
+        self.assertContains(response, '<title>هیئت محبان اهل‌بیت علیهم‌السلام</title>')
+        self.assertContains(response, 'id="about"')
+        self.assertContains(response, '<footer class="landing-footer">')
         for path in ('/announcements/', '/reports/', '/publications/', '/campaigns/', '/volunteer/', '/login/'):
             self.assertContains(response, f'href="{path}"')
+
+    def test_landing_uses_local_assets_and_submits_the_selected_unit(self):
+        response = self.client.get('/', {'unit': self.child.pk})
+        for asset in ('site/fonts.css', 'site/landing.css', 'site/courtyard-hero.webp'):
+            self.assertContains(response, static(asset))
+            self.assertIsNotNone(finders.find(asset))
+        self.assertIsNotNone(finders.find('site/Vazirmatn.woff2'))
+        self.assertContains(response, 'action="#content"')
+        self.assertContains(response, f'<option value="{self.child.pk}" selected>')
+        self.assertContains(response, f'href="/volunteer/?unit={self.child.pk}"')
+        self.assertContains(response, f'href="/night-gatherings/?show=archive&amp;unit={self.child.pk}"')
 
     def test_menu_lists_active_units_on_pages_without_a_unit_filter(self):
         self.other.active = False

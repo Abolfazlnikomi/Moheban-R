@@ -1,0 +1,54 @@
+{% extends "workspace/base.html" %}
+{% block workspace %}
+<header class="member-hero workspace-hero">
+  <div>
+    <p class="member-kicker">فهرست موارد</p>
+    <h1>{{ resource.title }}</h1>
+    {% if parent %}<p class="member-hero-copy">{{ parent }}</p>{% endif %}
+  </div>
+  {% if add_url %}<a class="member-button member-button-glass" href="{{ add_url }}">افزودن مورد جدید <span aria-hidden="true">+</span></a>{% endif %}
+</header>
+<section class="member-glass workspace-panel" aria-label="فهرست {{ resource.title }}">
+  {% if resource.search %}
+    <form class="workspace-search" method="get" action="{{ list_url }}">
+      <label for="workspace-q">جست‌وجو در فهرست</label>
+      <input type="search" id="workspace-q" name="q" value="{{ query }}" maxlength="120">
+      <button class="member-button member-button-primary" type="submit">جست‌وجو</button>
+      {% if query %}<a href="{{ list_url }}">پاک کردن جست‌وجو</a>{% endif %}
+    </form>
+  {% endif %}
+  {% if export_url %}
+    <form id="workspace-export" method="post" action="{{ export_url }}">{% csrf_token %}</form>
+  {% endif %}
+  {% if rows %}
+    <div class="workspace-table-scroll" tabindex="0" role="region" aria-label="جدول {{ resource.title }}">
+      <table>
+        <thead><tr>
+          {% if export_url %}<th scope="col">انتخاب خروجی</th>{% endif %}
+          <th scope="col">نام یا عنوان</th>
+          {% for column in columns %}<th scope="col">{{ column }}</th>{% endfor %}
+        </tr></thead>
+        <tbody>
+          {% for row in rows %}
+            <tr>
+              {% if export_url %}<td><input type="checkbox" name="selected" form="workspace-export" value="{{ row.object.pk }}" aria-label="انتخاب {{ row.object }}"></td>{% endif %}
+              <th scope="row"><a href="{{ row.url }}">{{ row.object }}</a></th>
+              {% for cell in row.cells %}<td>{{ cell|default_if_none:"—" }}</td>{% endfor %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% if export_url %}<button class="member-button member-button-primary" type="submit" form="workspace-export">خروجی اکسل موارد انتخاب‌شده</button>{% endif %}
+  {% else %}
+    <p>موردی پیدا نشد.</p>
+  {% endif %}
+  {% if page.has_other_pages %}
+    <nav class="workspace-pagination" aria-label="صفحه‌بندی">
+      {% if page.has_previous %}<a href="{% querystring page=page.previous_page_number %}">صفحهٔ قبل</a>{% endif %}
+      <span>صفحهٔ {{ page.number }} از {{ page.paginator.num_pages }}</span>
+      {% if page.has_next %}<a href="{% querystring page=page.next_page_number %}">صفحهٔ بعد</a>{% endif %}
+    </nav>
+  {% endif %}
+</section>
+{% endblock %}

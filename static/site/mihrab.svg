@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 390" fill="none">
+  <defs>
+    <linearGradient id="gold" x1="76" y1="50" x2="347" y2="355" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f5daa3"/><stop offset=".5" stop-color="#ccab70"/><stop offset="1" stop-color="#836b45"/>
+    </linearGradient>
+    <radialGradient id="niche" cx=".5" cy=".55" r=".7">
+      <stop stop-color="#244d3c"/><stop offset="1" stop-color="#102b22"/>
+    </radialGradient>
+    <pattern id="tile" width="24" height="24" patternUnits="userSpaceOnUse">
+      <path d="M12 0 24 12 12 24 0 12ZM0 0l24 24M24 0 0 24" stroke="#d4b479" stroke-opacity=".32" stroke-width=".55"/>
+    </pattern>
+    <path id="arch" d="M210 19c-8 18-30 35-62 56-42 28-73 66-73 118v145h270V193c0-52-31-90-73-118-32-21-54-38-62-56Z"/>
+    <path id="star" d="M0-8 2-2 8 0 2 2 0 8-2 2-8 0-2-2Z"/>
+    <g id="lamp">
+      <path d="M0 0v60m-4 5 4-5 4 5m-10 0h12l4 10-4 13H-6l-4-13Zm-4 10h20m-16 13 6 5 6-5" stroke="#d4b479"/>
+      <path d="m0 71 3 8-3 6-3-6Z" fill="#f5daa3"/>
+    </g>
+  </defs>
+  <circle cx="210" cy="195" r="161" stroke="#cba76e" stroke-opacity=".16"/>
+  <circle cx="210" cy="195" r="184" stroke="#cba76e" stroke-opacity=".12" stroke-dasharray="2 5"/>
+  <use href="#arch" fill="url(#niche)" stroke="url(#gold)" stroke-width="1.8"/>
+  <use href="#arch" fill="url(#tile)" opacity=".76"/>
+  <path d="M210 48c-13 17-33 29-55 45-36 26-61 57-61 101v128h232V194c0-44-25-75-61-101-22-16-42-28-55-45Z" fill="url(#niche)" stroke="url(#gold)" stroke-width="1.2"/>
+  <path d="M210 67c-13 13-28 22-47 36-31 24-56 49-56 91v115h206V194c0-42-25-67-56-91-19-14-34-23-47-36Z" stroke="#d4b479" stroke-opacity=".35"/>
+  <path d="M169 260h26m30 0h26m-41-151v21m-10-10h20M53 338h314m-275 13h236m-188 13h140" stroke="#d4b479" stroke-opacity=".59"/>
+  <g fill="#d4b479">
+    <use href="#star" x="210" y="260"/><use href="#star" x="210" y="120"/>
+    <use href="#star" x="43" y="101" opacity=".62"/><use href="#star" x="374" y="117" opacity=".62"/>
+    <use href="#star" x="48" y="281" opacity=".5"/><use href="#star" x="374" y="293" opacity=".5"/>
+  </g>
+  <g opacity=".8"><use href="#lamp" x="40" y="151"/><use href="#lamp" x="380" y="163"/></g>
+</svg>

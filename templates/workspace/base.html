@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{% if resource %}{{ resource.title }} | {% endif %}میز کار مدیریت محبان{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'site/account-dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'site/workspace.css' %}">
+{% endblock %}
+{% block content %}
+<div class="member-dashboard">
+  <div class="member-dashboard-inner workspace">
+    <nav class="workspace-nav" aria-label="مسیر میز کار">
+      <a href="{% url 'account' %}">حساب کاربری</a>
+      <a href="{% url 'staff_panel:index' %}">میز کار مدیریت</a>
+      {% if parent_url %}<a href="{{ parent_url }}">{{ parent }}</a>{% endif %}
+      {% if list_url and request.path != list_url %}<a href="{{ list_url }}">{{ resource.title }}</a>{% endif %}
+    </nav>
+    {% if messages %}
+      <ul class="workspace-messages" role="status">
+        {% for message in messages %}<li>{{ message }}</li>{% endfor %}
+      </ul>
+    {% endif %}
+    {% block workspace %}{% endblock %}
+  </div>
+</div>
+{% endblock %}

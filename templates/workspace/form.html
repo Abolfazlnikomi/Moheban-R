@@ -1,0 +1,18 @@
+{% extends "workspace/base.html" %}
+{% block workspace %}
+<header class="member-hero workspace-hero">
+  <div>
+    <p class="member-kicker">{{ resource.title }}</p>
+    <h1>{% if heading %}{{ heading }}{% elif editing %}ویرایش{% else %}افزودن مورد جدید{% endif %}</h1>
+    {% if object or parent %}<p class="member-hero-copy">{{ object|default:parent }}</p>{% endif %}
+  </div>
+</header>
+<form class="member-glass workspace-panel workspace-form" method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ form }}
+  <div class="workspace-actions">
+    <button class="member-button member-button-primary" type="submit">ذخیره</button>
+    <a class="member-button workspace-neutral" href="{{ cancel_url }}">انصراف</a>
+  </div>
+</form>
+{% endblock %}

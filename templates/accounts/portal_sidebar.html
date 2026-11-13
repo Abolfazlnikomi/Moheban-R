@@ -1,0 +1,24 @@
+<a class="portal-brand" href="{% url 'home' %}">
+  <span class="portal-brand-mark"><svg class="portal-icon" aria-hidden="true"><use href="#portal-mark"/></svg></span>
+  <span><strong>محبان</strong><small>هیئت محبان اهل‌بیت علیهم‌السلام</small></span>
+</a>
+<nav class="portal-nav" aria-label="بخش‌های حساب کاربری">
+  <p>حساب من</p>
+  <a href="#account-overview" aria-current="location"><svg class="portal-icon" aria-hidden="true"><use href="#portal-grid"/></svg> داشبورد</a>
+  <a href="#account-activity"><svg class="portal-icon" aria-hidden="true"><use href="#portal-calendar"/></svg> تازه‌های هیئت</a>
+  <a href="#account-profile"><svg class="portal-icon" aria-hidden="true"><use href="#portal-user"/></svg> پروفایل من</a>
+  <a href="#account-security"><svg class="portal-icon" aria-hidden="true"><use href="#portal-lock"/></svg> امنیت حساب</a>
+  {% if management_modules %}
+    <a href="#account-management"><svg class="portal-icon" aria-hidden="true"><use href="#portal-briefcase"/></svg> دسترسی‌های مدیریتی</a>
+  {% endif %}
+</nav>
+<div class="portal-sidebar-bottom">
+  <div class="portal-identity">
+    <span class="portal-avatar"><svg class="portal-icon" aria-hidden="true"><use href="#portal-user"/></svg></span>
+    <span><strong><bdi>{{ user.get_short_name|default:user.get_username }}</bdi></strong><small>{{ management_level|default:"عضو سایت" }}</small></span>
+  </div>
+  <form method="post" action="{% url 'logout' %}">
+    {% csrf_token %}
+    <button class="portal-logout" type="submit"><svg class="portal-icon" aria-hidden="true"><use href="#portal-exit"/></svg> خروج از حساب</button>
+  </form>
+</div>

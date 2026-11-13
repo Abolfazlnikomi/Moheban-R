@@ -1,0 +1,22 @@
+{% extends "workspace/base.html" %}
+{% block workspace %}
+<header class="member-hero workspace-hero">
+  <div>
+    <p class="member-kicker">{{ resource.title }}</p>
+    <h1>حذف مورد</h1>
+    <p class="member-hero-copy">{{ object }}</p>
+  </div>
+</header>
+<form class="member-glass workspace-panel" method="post">
+  {% csrf_token %}
+  {% if blocked %}
+    <p>به‌دلیل وابستگی رکوردهای دیگر یا محدودیت دسترسی، حذف این مورد ممکن نیست.</p>
+  {% else %}
+    <p>این مورد و داده‌هایی که مستقیماً به آن وابسته‌اند حذف می‌شوند. این کار قابل بازگشت نیست.</p>
+  {% endif %}
+  <div class="workspace-actions">
+    {% if not blocked %}<button type="submit" class="member-button workspace-danger">تأیید حذف</button>{% endif %}
+    <a class="member-button workspace-neutral" href="{{ cancel_url }}">انصراف</a>
+  </div>
+</form>
+{% endblock %}

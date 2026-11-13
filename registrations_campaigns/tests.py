@@ -49,7 +49,7 @@ class RegistrationTests(TestCase):
         export_url = reverse('staff_panel:registrations_campaigns_campaign_export', args=[campaign.pk])
         user = get_user_model().objects.create_user(username='staff', is_staff=True)
         self.client.force_login(user)
-        self.assertEqual(self.client.get(export_url).status_code, 302)
+        self.assertEqual(self.client.get(export_url).status_code, 403)
         user.user_permissions.add(Permission.objects.get(
             content_type__app_label='registrations_campaigns', codename='view_campaign',
         ))

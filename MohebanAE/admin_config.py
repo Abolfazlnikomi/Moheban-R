@@ -11,7 +11,7 @@ class SiteAdminConfig(AdminConfig):
         from django.contrib.auth.models import Group, User
         from django.db.models.signals import post_migrate
 
-        from .admin_access import ManageAccounts, ProtectFullAdminGroup, ProtectPrivilegedUsers, staff_panel
+        from .admin_access import ManageAccounts, ProtectFullAdminGroup, ProtectPrivilegedUsers
         from .admin_roles import ensure_full_admin_group
 
         class ManagedUserAdmin(ProtectPrivilegedUsers, ManageAccounts, UserAdmin):
@@ -25,5 +25,3 @@ class SiteAdminConfig(AdminConfig):
         admin.site.unregister([User, Group])
         admin.site.register(User, ManagedUserAdmin)
         admin.site.register(Group, ManagedGroupAdmin)
-        for model, model_admin in admin.site._registry.items():
-            staff_panel.register(model, type(model_admin))

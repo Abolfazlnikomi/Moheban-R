@@ -4,8 +4,12 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 from django.views.generic import TemplateView
 
-from .admin_access import PERMISSION_ACTIONS, staff_panel
+from announcements.models import Announcement
+from night_gatherings.models import Gathering
+from night_gatherings.views import upcoming_filter
+
 from .admin_roles import is_full_admin
+from .workspace_registry import workspace_modules
 
 
 class SiteLogoutView(LogoutView):
@@ -19,18 +23,12 @@ class AccountView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
-        if staff_panel.has_permission(self.request):
-            modules = staff_panel.get_app_list(self.request)
-            for module in modules:
-                for entry in module['models']:
-                    opts = entry['model']._meta
-                    entry['actions'] = [
-                        PERMISSION_ACTIONS[action] for action, allowed in entry['perms'].items() if allowed
-                    ]
-                    entry['actions'].extend(
-                        PERMISSION_ACTIONS[action] for action in ('publish', 'export')
-                        if user.has_perm(f'{opts.app_label}.{action}_{opts.model_name}')
-                    )
+        context.update(
+            next_gathering=Gathering.visible().filter(upcoming_filter(), is_public=True).order_by('starts_at', 'pk').first(),
+            recent_announcements=Announcement.visible().filter(is_public=True)[:3],
+        )
+        modules = workspace_modules(self.request)
+        if modules:
             context['management_modules'] = modules
             if user.is_superuser:
                 context['management_level'] = 'مدیر کل'
