@@ -5,6 +5,39 @@
     gap: .55rem .85rem;
 }
 .workspace-nav { margin-block-end: .85rem; font-size: .88rem; }
+.workspace-subsections { margin-block-start: clamp(1.15rem, 3vw, 2rem); }
+.workspace-tile-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+    gap: .85rem;
+    margin-block-start: .7rem;
+}
+.workspace-tile {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: .65rem;
+    min-height: 5.8rem;
+    padding: .85rem;
+    color: var(--member-ink);
+    text-decoration: none;
+}
+.workspace-tile:is(:hover, [aria-current]) { border-color: #9cbeb0; }
+.workspace-tile-copy > * { display: block; }
+.workspace-tile-copy small { color: var(--member-muted); margin-block-start: .12rem; }
+.workspace-tile-arrow { color: var(--member-accent); width: 1.05rem; }
+.workspace-section-hero { align-items: center; }
+.workspace-section-icon {
+    display: grid;
+    place-items: center;
+    width: clamp(3rem, 9vw, 5.4rem);
+    aspect-ratio: 1;
+    border: 1px solid #ffffff60;
+    border-radius: 1.2rem;
+    background: linear-gradient(145deg, #ffffff40, #ffffff15);
+    box-shadow: inset 0 1px 0 #ffffff50, 0 .6rem 1.4rem #102f362f;
+}
+.workspace-section-icon .portal-icon { width: 48%; height: 48%; }
 .workspace-nav a, .workspace-panel a:not(.member-button) {
     color: var(--member-accent);
     text-underline-offset: .22em;

@@ -1,0 +1,18 @@
+{% extends "experience_writing/base.html" %}
+{% block experiences %}
+<header class="member-hero workspace-hero">
+  <div>
+    <p class="member-kicker">تجربه‌نگاری هیئت</p>
+    <h1>ثبت تجربهٔ جدید</h1>
+    <p class="member-hero-copy">موضوع و زیرگروه را انتخاب کنید. تاریخ ثبت خودکار ذخیره می‌شود.</p>
+  </div>
+</header>
+<form class="member-glass workspace-panel workspace-form" method="post">
+  {% csrf_token %}
+  {{ form }}
+  <div class="workspace-actions">
+    <button class="member-button member-button-primary" type="submit">ذخیرهٔ تجربه</button>
+    <a class="member-button workspace-neutral" href="{% url 'experience_writing:index' %}">انصراف</a>
+  </div>
+</form>
+{% endblock %}

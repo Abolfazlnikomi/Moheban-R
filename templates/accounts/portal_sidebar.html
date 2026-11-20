@@ -2,16 +2,25 @@
   <span class="portal-brand-mark"><svg class="portal-icon" aria-hidden="true"><use href="#portal-mark"/></svg></span>
   <span><strong>محبان</strong><small>هیئت محبان اهل‌بیت علیهم‌السلام</small></span>
 </a>
+{% url 'account' as account_url %}
 <nav class="portal-nav" aria-label="بخش‌های حساب کاربری">
   <p>حساب من</p>
-  <a href="#account-overview" aria-current="location"><svg class="portal-icon" aria-hidden="true"><use href="#portal-grid"/></svg> داشبورد</a>
-  <a href="#account-activity"><svg class="portal-icon" aria-hidden="true"><use href="#portal-calendar"/></svg> تازه‌های هیئت</a>
-  <a href="#account-profile"><svg class="portal-icon" aria-hidden="true"><use href="#portal-user"/></svg> پروفایل من</a>
-  <a href="#account-security"><svg class="portal-icon" aria-hidden="true"><use href="#portal-lock"/></svg> امنیت حساب</a>
-  {% if management_modules %}
-    <a href="#account-management"><svg class="portal-icon" aria-hidden="true"><use href="#portal-briefcase"/></svg> دسترسی‌های مدیریتی</a>
+  <a href="{% if request.path != account_url %}{{ account_url }}{% endif %}#account-overview"{% if request.path == account_url %} aria-current="location"{% endif %}><svg class="portal-icon" aria-hidden="true"><use href="#portal-grid"/></svg> داشبورد</a>
+  <a href="{% if request.path != account_url %}{{ account_url }}{% endif %}#account-profile"><svg class="portal-icon" aria-hidden="true"><use href="#portal-user"/></svg> پروفایل و امنیت حساب</a>
+  {% if can_use_experiences %}
+    <a href="{% url 'experience_writing:index' %}"{% if request.resolver_match.namespace == 'experience_writing' %} aria-current="{% if request.resolver_match.url_name == 'index' %}page{% else %}location{% endif %}"{% endif %}><svg class="portal-icon" aria-hidden="true"><use href="#portal-book"/></svg> تجربه‌نگاری</a>
   {% endif %}
 </nav>
+{% if management_modules %}
+  <nav class="portal-nav portal-management-nav" aria-label="بخش‌های مدیریت">
+    <p>دسترسی‌های مدیریتی من</p>
+    {% for module in management_modules %}
+      <a class="portal-management-link" href="{{ module.url }}"{% if module.key == active_module.key %} aria-current="{% if request.path == module.url %}page{% else %}location{% endif %}"{% endif %}>
+        <svg class="portal-icon" aria-hidden="true"><use href="#portal-{{ module.icon }}"/></svg>{{ module.name }}
+      </a>
+    {% endfor %}
+  </nav>
+{% endif %}
 <div class="portal-sidebar-bottom">
   <div class="portal-identity">
     <span class="portal-avatar"><svg class="portal-icon" aria-hidden="true"><use href="#portal-user"/></svg></span>

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}نظرات و نظرسنجی | محبان{% endblock %}
+{% block content %}
+<div class="account-panel unit-page">
+  <h1>نظرات و نظرسنجی</h1>
+  <p>نظر، انتقاد یا پیشنهادتان را با هیئت در میان بگذارید. بازخوردهای تأییدشده برای همه قابل مشاهده‌اند.</p>
+  <p><a href="{% url 'feedback_polls:submit' %}">ثبت بازخورد</a></p>
+  {% if messages %}<ul role="status">{% for message in messages %}<li>{{ message }}</li>{% endfor %}</ul>{% endif %}
+  <form method="get">
+    <label for="feedback-category">دسته</label>
+    <select name="category" id="feedback-category">
+      <option value="">همهٔ دسته‌ها</option>
+      {% for category in categories %}<option value="{{ category.pk }}"{% if selected.pk == category.pk %} selected{% endif %}>{{ category.name }}</option>{% endfor %}
+    </select>
+    <label for="feedback-sort">ترتیب بازخوردها</label>
+    <select name="sort" id="feedback-sort">
+      <option value="newest">جدیدترین</option>
+      <option value="oldest"{% if oldest %} selected{% endif %}>قدیمی‌ترین</option>
+    </select>
+    <button type="submit">اعمال فیلتر</button>
+  </form>
+  <section aria-labelledby="polls-heading">
+    <h2 id="polls-heading">نظرسنجی‌ها</h2>
+    {% for poll in polls %}
+      <article><h3><a href="{% url 'feedback_polls:poll' poll.pk %}">{{ poll.question }}</a></h3>
+      <p>{{ poll.category }} · {{ poll.get_status_display }}</p></article>
+    {% empty %}
+      <p>نظرسنجی‌ای برای نمایش وجود ندارد.</p>
+    {% endfor %}
+    {% if polls.has_other_pages %}
+      <nav aria-label="صفحه‌بندی نظرسنجی‌ها">
+        {% if polls.has_previous %}<a href="{% querystring poll_page=polls.previous_page_number %}">صفحهٔ قبل</a>{% endif %}
+        <span>{{ polls.number }} از {{ polls.paginator.num_pages }}</span>
+        {% if polls.has_next %}<a href="{% querystring poll_page=polls.next_page_number %}">صفحهٔ بعد</a>{% endif %}
+      </nav>
+    {% endif %}
+  </section>
+  <section aria-labelledby="feedback-heading">
+    <h2 id="feedback-heading">بازخوردهای منتشرشده</h2>
+    {% for entry in page %}
+      <article>
+        <h3>{{ entry.title }}</h3>
+        <p>{{ entry.get_kind_display }} · {{ entry.category }} · <time datetime="{{ entry.created_at|date:'c' }}">{{ entry.created_at|date:"Y/m/d" }}</time></p>
+        {{ entry.body|linebreaks }}
+      </article>
+    {% empty %}
+      <p>بازخوردی در این دسته منتشر نشده است.</p>
+    {% endfor %}
+    {% if page.has_other_pages %}
+      <nav aria-label="صفحه‌بندی بازخوردها">
+        {% if page.has_previous %}<a href="{% querystring page=page.previous_page_number %}">صفحهٔ قبل</a>{% endif %}
+        <span>{{ page.number }} از {{ page.paginator.num_pages }}</span>
+        {% if page.has_next %}<a href="{% querystring page=page.next_page_number %}">صفحهٔ بعد</a>{% endif %}
+      </nav>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

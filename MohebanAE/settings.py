@@ -24,17 +24,15 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # اپ‌های پروژه
-    'university_heiat',
     'dorm_heiat',
     'announcements',
     'reports_media',
     'registrations_campaigns',
-    'experience_writing',
-    'feedback_polls',
     'publications',
     'night_gatherings',
-    'about_us',
-    'contact_us',
+    'experience_writing',
+    'feedback_polls',
+    'site_info',
 ]
 
 MIDDLEWARE = [

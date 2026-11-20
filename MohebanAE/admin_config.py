@@ -10,12 +10,14 @@ class SiteAdminConfig(AdminConfig):
         from django.contrib.auth.admin import GroupAdmin, UserAdmin
         from django.contrib.auth.models import Group, User
         from django.db.models.signals import post_migrate
+        from experience_writing.admin import ExperienceAccessInline
 
         from .admin_access import ManageAccounts, ProtectFullAdminGroup, ProtectPrivilegedUsers
         from .admin_roles import ensure_full_admin_group
 
         class ManagedUserAdmin(ProtectPrivilegedUsers, ManageAccounts, UserAdmin):
-            pass
+            def get_inlines(self, request, obj=None):
+                return (ExperienceAccessInline,) if obj is not None and request.user.is_superuser else ()
 
         class ManagedGroupAdmin(ProtectFullAdminGroup, ManageAccounts, GroupAdmin):
             pass

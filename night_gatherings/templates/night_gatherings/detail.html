@@ -11,6 +11,14 @@
   </header>
   {% if gathering.poster %}<img class="detail-cover" src="{% url 'night_gatherings:poster' gathering.pk %}" alt="پوستر {{ gathering.title }}">{% endif %}
   <div class="prose">{{ gathering.description|linebreaks }}</div>
+  {% if site_announcements %}
+    <section>
+      <h2>اطلاعیه‌های مرتبط</h2>
+      <ul>
+        {% for item in site_announcements %}<li><a href="{{ item.get_absolute_url }}{{ scope.query }}">{{ item.title }}</a></li>{% endfor %}
+      </ul>
+    </section>
+  {% endif %}
   {% if notices %}
     <section>
       <h2>اطلاعیه‌ها</h2>
@@ -43,4 +51,3 @@
   {% endif %}
 </article>
 {% endblock %}
-

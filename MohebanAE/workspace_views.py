@@ -17,6 +17,8 @@ from django.utils.html import format_html
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_http_methods, require_safe
 
+from feedback_polls.forms import ModerationFilter
+from feedback_polls.models import Feedback
 from night_gatherings.models import Gathering, GatheringNotice, ReportAsset
 from registrations_campaigns.exports import campaign_export, volunteer_export
 from registrations_campaigns.models import Campaign, CampaignEntry, VolunteerApplication, VolunteerSettings
@@ -24,7 +26,7 @@ from reports_media.models import MediaFile, MediaPost
 
 from .admin_access import permission_label
 from .admin_roles import FULL_ADMIN_GROUP
-from .workspace_registry import BY_MODEL, RESOURCES, workspace_modules
+from .workspace_registry import BY_MODEL, MODULES, RESOURCES, workspace_navigation
 
 
 FILE_ROUTES = {
@@ -72,18 +74,41 @@ def list_or_index(request, resource, parent):
         parent_resource = BY_MODEL[resource.parent]
         if parent_resource.allows(request, 'view', parent):
             return redirect(parent_resource.url('detail', obj=parent))
-    return redirect('staff_panel:index')
+    return redirect('account')
+
+
+def subsection_links(request, section, obj):
+    if obj is None:
+        return []
+    can_view = section.allows(request, 'view', obj)
+    can_edit = section.allows(request, 'change', obj)
+    links = []
+    for child in RESOURCES:
+        if child.parent is not section.model:
+            continue
+        if can_view and child.allows(request, 'view'):
+            links.append({'name': child.title, 'url': child.url('changelist', parent=obj),
+                          'action': 'مشاهدهٔ فهرست', 'icon': 'layers'})
+        if can_edit and child.allows(request, 'add'):
+            links.append({'name': f'افزودن {child.model._meta.verbose_name}', 'url': child.url('add', parent=obj),
+                          'action': 'ایجاد مورد جدید', 'icon': 'plus'})
+    return links
 
 
 def context_for(request, resource, parent, obj=None):
-    parent_url = BY_MODEL[resource.parent].url('detail', obj=parent) if parent is not None else ''
+    section = BY_MODEL[resource.parent] if parent is not None else resource
+    parent_url = section.url('detail', obj=parent) if parent is not None and section.allows(request, 'view', parent) else ''
     list_url = resource.url('changelist', parent=parent) if resource.allows(request, 'view') else ''
     detail_url = resource.url('detail', obj=obj, parent=parent) if obj is not None and resource.allows(
         request, 'view', obj
     ) else ''
+    subsection_parent = parent if parent is not None else obj
     return {
+        **workspace_navigation(request, resource),
         'resource': resource, 'parent': parent, 'parent_url': parent_url, 'list_url': list_url,
-        'cancel_url': detail_url or list_url or parent_url or reverse('staff_panel:index'),
+        'subsection_parent': subsection_parent,
+        'subsection_links': subsection_links(request, section, subsection_parent),
+        'cancel_url': detail_url or list_url or parent_url or reverse('account'),
     }
 
 
@@ -170,10 +195,13 @@ def build_form(request, resource, obj, parent):
 
 @workspace_access
 @require_safe
-def index(request):
-    modules = workspace_modules(request)
-    require_access(bool(modules))
-    return render(request, 'workspace/index.html', {'modules': modules})
+def section(request, section_key):
+    if section_key not in MODULES:
+        raise Http404
+    context = workspace_navigation(request)
+    active_module = next((module for module in context['management_modules'] if module['key'] == section_key), None)
+    require_access(active_module is not None)
+    return render(request, 'workspace/section.html', {**context, 'active_module': active_module})
 
 
 @workspace_access
@@ -181,9 +209,14 @@ def index(request):
 def resource_list(request, resource, parent_pk=None):
     parent = get_parent(request, resource, parent_pk)
     require_access(resource.allows(request, 'view'))
-    page = Paginator(resource.filtered(request, parent), 25).get_page(request.GET.get('page'))
+    entries = resource.filtered(request, parent)
+    filters = ModerationFilter(request.GET) if resource.model is Feedback else None
+    if filters is not None:
+        entries = filters.apply(entries).select_related('category')
+    page = Paginator(entries, 25).get_page(request.GET.get('page'))
     return render(request, 'workspace/list.html', {
         **context_for(request, resource, parent), 'page': page, 'query': request.GET.get('q', '')[:120],
+        'search_filters': filters,
         'columns': [resource.model._meta.get_field(name).verbose_name for name in resource.columns],
         'rows': [{
             'object': obj, 'cells': [display_field(obj, name)['value'] for name in resource.columns],
@@ -206,13 +239,6 @@ def resource_detail(request, resource, pk, parent_pk=None):
     parent_editable = parent is None or BY_MODEL[resource.parent].allows(request, 'change', parent)
     can_edit = parent_editable and resource.allows(request, 'change', obj)
     can_delete = parent_editable and resource.allows(request, 'delete', obj)
-    related = []
-    for child in RESOURCES:
-        if child.parent is resource.model:
-            if child.allows(request, 'view'):
-                related.append({'name': child.title, 'url': child.url('changelist', parent=obj)})
-            if can_edit and child.allows(request, 'add'):
-                related.append({'name': f'افزودن {child.model._meta.verbose_name}', 'url': child.url('add', parent=obj)})
     return render(request, 'workspace/detail.html', {
         **context_for(request, resource, parent, obj), 'object': obj,
         'fields': [display_field(obj, field) for field in resource.fields],
@@ -220,7 +246,6 @@ def resource_detail(request, resource, pk, parent_pk=None):
         'delete_url': resource.url('delete', obj=obj, parent=parent) if can_delete else '',
         'password_url': resource.url('password_change', obj=obj) if resource.model is User and can_edit else '',
         'export_url': resource.url('export', obj=obj) if resource.model is Campaign and resource.policy.can_export(request) else '',
-        'related': related,
     })
 
 

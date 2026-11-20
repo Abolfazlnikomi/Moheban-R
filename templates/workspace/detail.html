@@ -26,10 +26,9 @@
       </div>
     {% endfor %}
   </dl>
-  {% if related or delete_url %}
+  {% if delete_url %}
     <div class="workspace-actions">
-      {% for item in related %}<a class="member-button member-button-primary" href="{{ item.url }}">{{ item.name }}</a>{% endfor %}
-      {% if delete_url %}<a class="member-button workspace-danger" href="{{ delete_url }}">حذف مورد</a>{% endif %}
+      <a class="member-button workspace-danger" href="{{ delete_url }}">حذف مورد</a>
     </div>
   {% endif %}
 </section>

@@ -10,6 +10,7 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(template_name='accounts/login.html'), name='login'),
     path('logout/', SiteLogoutView.as_view(), name='logout'),
     path('account/', AccountView.as_view(), name='account'),
+    path('account/experiences/', include('experience_writing.urls')),
     path('password-change/', auth_views.PasswordChangeView.as_view(
         template_name='accounts/password_change.html',
     ), name='password_change'),
@@ -20,6 +21,7 @@ urlpatterns = [
     path('staff/', include('MohebanAE.workspace_urls')),
     path('reports/', include('reports_media.urls')),
     path('announcements/', include('announcements.urls')),
+    path('feedback/', include('feedback_polls.urls')),
     path('publications/', include('publications.urls')),
     path('night-gatherings/', include('night_gatherings.urls')),
     path('', include('registrations_campaigns.urls')),

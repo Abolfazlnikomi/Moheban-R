@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}ثبت بازخورد | محبان{% endblock %}
+{% block content %}
+<div class="account-panel unit-page">
+  <a href="{% url 'feedback_polls:index' %}">بازگشت به بازخوردها</a>
+  <h1>ثبت بازخورد</h1>
+  <p>نام حساب شما عمومی نمی‌شود. از نوشتن اطلاعات خصوصی در متن بازخورد خودداری کنید.</p>
+  <form method="post">
+    {% csrf_token %}
+    {{ form }}
+    <button type="submit">ارسال برای بررسی</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,9 @@
+<div class="workspace-tile-grid">
+  {% for link in links %}
+    <a class="member-glass workspace-tile" href="{{ link.url }}"{% if request.path == link.url %} aria-current="page"{% endif %}>
+      <span class="member-icon"><svg class="portal-icon" aria-hidden="true"><use href="#portal-{{ link.icon }}"/></svg></span>
+      <span class="workspace-tile-copy"><strong>{{ link.name }}</strong><small>{{ link.action }}</small></span>
+      <svg class="portal-icon workspace-tile-arrow" aria-hidden="true"><use href="#portal-arrow"/></svg>
+    </a>
+  {% endfor %}
+</div>

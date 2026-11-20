@@ -33,7 +33,7 @@ class UnitTests(TestCase):
         self.assertContains(response, '<details class="site-menu">')
         self.assertContains(response, '<title>هیئت محبان اهل‌بیت علیهم‌السلام</title>')
         self.assertContains(response, 'id="about"')
-        self.assertContains(response, '<footer class="landing-footer">')
+        self.assertContains(response, '<footer class="site-footer"', count=1)
         for path in ('/announcements/', '/reports/', '/publications/', '/campaigns/', '/volunteer/', '/login/'):
             self.assertContains(response, f'href="{path}"')
 

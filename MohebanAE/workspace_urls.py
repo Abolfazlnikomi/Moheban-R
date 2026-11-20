@@ -10,8 +10,9 @@ from .workspace_registry import RESOURCES
 
 app_name = 'staff_panel'
 urlpatterns = [
-    path('', views.index, name='index'),
+    path('', RedirectView.as_view(pattern_name='account')),
     path('login/', RedirectView.as_view(pattern_name='login'), name='login'),
+    path('sections/<slug:section_key>/', views.section, name='section'),
 ]
 
 for resource in RESOURCES:

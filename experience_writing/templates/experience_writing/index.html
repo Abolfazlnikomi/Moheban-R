@@ -1,0 +1,45 @@
+{% extends "experience_writing/base.html" %}
+{% block experiences %}
+<header class="member-hero workspace-hero">
+  <div>
+    <p class="member-kicker">مدیریت دانش هیئت</p>
+    <h1>تجربه‌نگاری</h1>
+    <p class="member-hero-copy">اینجا تجربه‌های ثبت‌شده در حوزه‌هایی که به آن‌ها دسترسی دارید را می‌بینید.</p>
+  </div>
+  {% if can_record %}<a class="member-button member-button-glass" href="{% url 'experience_writing:create' %}">ثبت تجربهٔ جدید</a>{% endif %}
+</header>
+{% if user.is_superuser %}
+  <nav class="workspace-actions workspace-panel member-glass" aria-label="مدیریت تجربه‌نگاری">
+    <a class="member-button workspace-neutral" href="{% url 'admin:experience_writing_scope_changelist' %}">مدیریت حوزه‌ها و زیرگروه‌ها</a>
+    <a class="member-button workspace-neutral" href="{% url 'admin:auth_user_changelist' %}">تنظیم دسترسی کاربران</a>
+  </nav>
+{% endif %}
+<section class="workspace-subsections" aria-labelledby="experience-list-heading">
+  <h2 id="experience-list-heading">تجربه‌های ثبت‌شده</h2>
+  {% if not scopes %}
+    <div class="member-glass workspace-panel">هنوز حوزه‌ای برای این حساب تعریف نشده است.</div>
+  {% elif not can_record %}
+    <div class="member-glass workspace-panel">برای حوزه‌های مجاز شما هنوز زیرگروهی تعریف نشده است.</div>
+  {% endif %}
+  {% if page.object_list %}
+    <div class="workspace-tile-grid">
+      {% for item in page %}
+        <a class="member-glass workspace-tile" href="{% url 'experience_writing:detail' item.pk %}">
+          <span class="member-icon"><svg class="portal-icon" aria-hidden="true"><use href="#portal-book"/></svg></span>
+          <span class="workspace-tile-copy"><strong>{{ item.title }}</strong><small>{{ item.subgroup }}</small></span>
+          <svg class="portal-icon workspace-tile-arrow" aria-hidden="true"><use href="#portal-arrow"/></svg>
+        </a>
+      {% endfor %}
+    </div>
+  {% elif can_record %}
+    <div class="member-glass workspace-panel">هنوز تجربه‌ای در حوزه‌های شما ثبت نشده است.</div>
+  {% endif %}
+  {% if page.has_other_pages %}
+    <nav class="workspace-pagination" aria-label="صفحه‌بندی">
+      {% if page.has_previous %}<a href="{% querystring page=page.previous_page_number %}">صفحهٔ قبل</a>{% endif %}
+      <span>{{ page.number }} از {{ page.paginator.num_pages }}</span>
+      {% if page.has_next %}<a href="{% querystring page=page.next_page_number %}">صفحهٔ بعد</a>{% endif %}
+    </nav>
+  {% endif %}
+</section>
+{% endblock %}

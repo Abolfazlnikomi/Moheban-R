@@ -1,0 +1,15 @@
+{% extends "workspace/base.html" %}
+{% block workspace %}
+<header class="member-hero workspace-hero workspace-section-hero">
+  <div>
+    <p class="member-kicker">مدیریت محبان</p>
+    <h1>{{ active_module.name }}</h1>
+    <p class="member-hero-copy">برای شروع، یکی از زیربخش‌های این بخش را انتخاب کنید.</p>
+  </div>
+  <span class="workspace-section-icon"><svg class="portal-icon" aria-hidden="true"><use href="#portal-{{ active_module.icon }}"/></svg></span>
+</header>
+<section class="workspace-subsections" aria-labelledby="workspace-tools-heading">
+  <h2 id="workspace-tools-heading">زیربخش‌ها</h2>
+  {% include "workspace/tiles.html" with links=active_module.models %}
+</section>
+{% endblock %}

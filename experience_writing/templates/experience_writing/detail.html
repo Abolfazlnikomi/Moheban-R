@@ -1,0 +1,17 @@
+{% extends "experience_writing/base.html" %}
+{% block experiences %}
+<header class="member-hero workspace-hero">
+  <div>
+    <p class="member-kicker">{{ experience.subgroup }}</p>
+    <h1>{{ experience.title }}</h1>
+    <p class="member-hero-copy">
+      <time datetime="{{ experience.recorded_at|date:'c' }}">{{ experience.recorded_at|date:"Y/m/d، H:i" }}</time>
+      {% if experience.author %} · <bdi>{{ experience.author.get_full_name|default:experience.author.get_username }}</bdi>{% endif %}
+    </p>
+  </div>
+</header>
+<article class="member-glass workspace-panel">
+  <h2>متن تجربه</h2>
+  {{ experience.body|linebreaks }}
+</article>
+{% endblock %}

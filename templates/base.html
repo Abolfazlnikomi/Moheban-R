@@ -1,22 +1,22 @@
-
-{% load static %}
+{% load static site_footer %}
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <meta name="theme-color" content="#102f27">
-    <meta name="description" content="محبان؛ پایگاه فرهنگی و مذهبی">
+    <meta name="theme-color" content="#081f2b">
+    <meta name="description" content="محبان؛ پایگاه فرهنگی و مذهبی هیئت محبان اهل‌بیت علیهم‌السلام">
 
     <title>{% block title %}محبان{% endblock %}</title>
 
     <link rel="stylesheet" href="{% static 'site/fonts.css' %}">
     <link rel="stylesheet" href="{% static 'site/accounts.css' %}">
+    <link rel="stylesheet" href="{% static 'site/footer.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
 
-<body class="mohban-site{% block body_class %}{% endblock %}">
+<body id="page-top" class="mohban-site{% block body_class %}{% endblock %}">
 
 {% block site_header %}
 <header class="site-header">
@@ -44,7 +44,7 @@
                 aria-label="منوی اصلی"
                 aria-controls="site-nav"
                 aria-expanded="false"
-                onclick="document.querySelector('.site-nav').classList.toggle('is-open'); this.setAttribute('aria-expanded', document.querySelector('.site-nav').classList.contains('is-open'));">
+                onclick="const nav = document.getElementById('site-nav'); const isOpen = nav.classList.toggle('is-open'); this.setAttribute('aria-expanded', String(isOpen));">
             <span></span>
             <span></span>
             <span></span>
@@ -53,43 +53,53 @@
         <nav class="site-nav" id="site-nav" aria-label="ناوبری اصلی">
 
             <a href="{% url 'home' %}{{ scope.query }}"
-               {% if request.resolver_match.url_name == 'home' %}
-               aria-current="page"
-               {% endif %}>
+               {% if request.resolver_match.url_name == 'home' %}aria-current="page"{% endif %}>
                 خانه
             </a>
 
-            <a href="{% url 'announcements:list' %}{{ scope.query }}">
+            <a href="{% url 'announcements:list' %}{{ scope.query }}"
+               {% if request.resolver_match.view_name == 'announcements:list' %}aria-current="page"{% endif %}>
                 اطلاعیه‌ها
             </a>
 
-            <a href="{% url 'reports_media:archive' %}{{ scope.query }}">
+            <a href="{% url 'reports_media:archive' %}{{ scope.query }}"
+               {% if request.resolver_match.view_name == 'reports_media:archive' %}aria-current="page"{% endif %}>
                 گزارش‌ها
             </a>
 
-            <a href="{% url 'publications:list' %}{{ scope.query }}">
+            <a href="{% url 'publications:list' %}{{ scope.query }}"
+               {% if request.resolver_match.view_name == 'publications:list' %}aria-current="page"{% endif %}>
                 نشریات
             </a>
 
-            <a href="{% url 'night_gatherings:list' %}{{ scope.query }}">
+            <a href="{% url 'feedback_polls:index' %}"
+               {% if request.resolver_match.view_name == 'feedback_polls:index' %}aria-current="page"{% endif %}>
+                نظرات و نظرسنجی
+            </a>
+
+            <a href="{% url 'night_gatherings:list' %}{{ scope.query }}"
+               {% if request.resolver_match.view_name == 'night_gatherings:list' %}aria-current="page"{% endif %}>
                 تجمعات شبانه
             </a>
 
-            <a href="{% url 'registrations_campaigns:campaigns' %}{{ scope.query }}">
+            <a href="{% url 'registrations_campaigns:campaigns' %}{{ scope.query }}"
+               {% if request.resolver_match.view_name == 'registrations_campaigns:campaigns' %}aria-current="page"{% endif %}>
                 پویش‌ها
             </a>
 
             {% if menu_scope.options %}
             <details class="site-menu">
-                <summary>واحدها <span>⌄</span></summary>
+                <summary>واحدها <span aria-hidden="true">⌄</span></summary>
 
                 <div class="site-units-menu">
-                    <a href="{% url 'home' %}">
+                    <a href="{% url 'home' %}"{% if not menu_scope.selected %} aria-current="true"{% endif %}>
                         همهٔ واحدها
                     </a>
 
                     {% for option in menu_scope.options %}
-                    <a href="{% url 'home' %}?unit={{ option.id }}"{% if menu_scope.selected == option.id %} aria-current="true"{% endif %}>{{ option.menu_label }}</a>
+                    <a href="{% url 'home' %}?unit={{ option.id }}"{% if menu_scope.selected == option.id %} aria-current="true"{% endif %}>
+                        {{ option.menu_label }}
+                    </a>
                     {% endfor %}
                 </div>
             </details>
@@ -101,7 +111,7 @@
 
             <a class="site-volunteer-link"
                href="{% url 'registrations_campaigns:volunteer' %}{{ scope.query }}">
-                <span>✧</span>
+                <span aria-hidden="true">✧</span>
                 ثبت‌نام خُدام
             </a>
 
@@ -138,7 +148,7 @@
     {% block content %}{% endblock %}
 </main>
 
-{% block footer %}{% endblock %}
+{% site_footer %}
 
 {% block extra_js %}{% endblock %}
 

@@ -6,15 +6,19 @@ from django.db.models import Q
 from django.urls import reverse
 
 from announcements.models import Announcement
+from announcements.forms import AnnouncementForm
 from dorm_heiat.admin import UnitContentForm
 from dorm_heiat.models import Unit, UnitType
+from experience_writing.access import experience_access
+from feedback_polls.models import Feedback, FeedbackCategory, Poll, PollOption
 from night_gatherings.admin import GatheringForm
 from night_gatherings.models import Gathering, GatheringNotice, GatheringReport, ReportAsset
 from publications.models import Publication
 from registrations_campaigns.models import Campaign, CampaignEntry, CampaignField, VolunteerApplication, VolunteerSection, VolunteerSettings
 from reports_media.models import Category, Event, MediaFile, MediaPost, Tag
+from site_info.models import FooterSettings, SocialLink
 
-from .admin_access import PERMISSION_ACTIONS
+from .admin_roles import is_full_admin
 
 
 @dataclass(frozen=True)
@@ -75,7 +79,7 @@ class Resource:
 EDITORIAL = ('title', 'summary', 'description', 'published', 'published_at', 'is_public', 'units')
 EDITORIAL_COLUMNS = ('published', 'published_at')
 RESOURCES = (
-    Resource(Announcement, EDITORIAL, EDITORIAL_COLUMNS, ('title', 'description'), UnitContentForm),
+    Resource(Announcement, (*EDITORIAL, 'gathering'), EDITORIAL_COLUMNS, ('title', 'description'), AnnouncementForm),
     Resource(Publication, EDITORIAL, EDITORIAL_COLUMNS, ('title', 'description'), UnitContentForm),
     Resource(MediaPost, ('title', 'summary', 'description', 'event_date', 'published_at', 'category', 'tags',
                          'events', 'kind', 'status', 'show_in_archive', 'cover', 'responsible',
@@ -107,6 +111,14 @@ RESOURCES = (
                     'is_superuser', 'groups', 'user_permissions'), ('email', 'is_active', 'is_staff'),
              ('username', 'first_name', 'last_name', 'email')),
     Resource(Group, ('name', 'permissions'), search=('name',)),
+    Resource(Feedback, ('title', 'body', 'category', 'kind', 'status', 'author', 'created_at'),
+             ('category', 'kind', 'status', 'created_at'), ('title', 'body', 'category__name')),
+    Resource(FeedbackCategory, ('name', 'position'), ('position',), ('name',)),
+    Resource(Poll, ('question', 'category', 'status', 'created_at'), ('category', 'status'), ('question',)),
+    Resource(PollOption, ('text', 'position'), ('position',), parent=Poll, parent_field='poll'),
+    Resource(FooterSettings, ('name', 'about', 'goals', 'activities', 'contact', 'phone', 'email', 'address',
+                              'channel_url', 'instagram_url')),
+    Resource(SocialLink, ('label', 'url', 'position'), ('position',), parent=FooterSettings, parent_field='footer'),
     Resource(MediaFile, ('file', 'embed', 'caption', 'order', 'private'), ('order', 'private'),
              parent=MediaPost, parent_field='post'),
     Resource(ReportAsset, ('file', 'embed', 'caption', 'order'), ('order',),
@@ -115,6 +127,23 @@ RESOURCES = (
              parent=Campaign, parent_field='campaign'),
 )
 BY_MODEL = {resource.model: resource for resource in RESOURCES}
+VOLUNTEER_MODELS = (VolunteerSettings, VolunteerSection, VolunteerApplication)
+MODULES = {
+    'announcements': ('اطلاعیه‌ها', 'bell'),
+    'publications': ('نشریات', 'book'),
+    'reports_media': ('گزارش‌ها و رسانه', 'media'),
+    'night_gatherings': ('تجمعات شبانه', 'calendar'),
+    'registrations_campaigns': ('پویش‌ها', 'flag'),
+    'volunteers': ('ثبت‌نام خُدام', 'heart'),
+    'dorm_heiat': ('واحدها', 'layers'),
+    'auth': ('کاربران و دسترسی‌ها', 'lock'),
+    'feedback_polls': ('نظرات و نظرسنجی', 'heart'),
+    'site_info': ('فوتر سایت', 'layers'),
+}
+
+
+def module_key(resource):
+    return 'volunteers' if resource.model in VOLUNTEER_MODELS else resource.model._meta.app_label
 
 
 def workspace_modules(request):
@@ -122,20 +151,39 @@ def workspace_modules(request):
     for resource in RESOURCES:
         if resource.parent is not None:
             continue
-        actions = {action for action in ('view', 'add', 'change', 'delete') if resource.allows(request, action)}
-        if not actions:
+        list_url = resource.url('changelist') if resource.allows(request, 'view') else ''
+        add_url = resource.url('add') if resource.allows(request, 'add') else ''
+        if not (list_url or add_url):
             continue
-        app_label = resource.model._meta.app_label
-        module = modules.setdefault(app_label, {
-            'name': resource.model._meta.app_config.verbose_name, 'models': [],
-        })
+        group = module_key(resource)
+        name, icon = MODULES[group]
+        if group not in modules:
+            modules[group] = {
+                'key': group, 'name': name, 'icon': icon, 'models': [],
+                'url': reverse('staff_panel:section', args=[group]),
+            }
+        module = modules[group]
         module['models'].append({
             'name': resource.title,
-            'actions': [label for action, label in PERMISSION_ACTIONS.items()
-                        if action in actions or action in ('publish', 'export') and request.user.has_perm(
-                            f'{app_label}.{action}_{resource.model._meta.model_name}'
-                        )],
-            'list_url': resource.url('changelist') if 'view' in actions else '',
-            'add_url': resource.url('add') if 'add' in actions else '',
+            'url': list_url or add_url,
+            'action': 'مشاهدهٔ فهرست' if list_url else 'افزودن مورد جدید',
+            'icon': 'grid' if list_url else 'plus',
         })
     return list(modules.values())
+
+
+def workspace_navigation(request, resource=None):
+    modules = workspace_modules(request)
+    context = {'management_modules': modules, 'can_use_experiences': experience_access(request) is not None}
+    if modules:
+        user = request.user
+        if user.is_superuser:
+            context['management_level'] = 'مدیر کل'
+        elif is_full_admin(user):
+            context['management_level'] = 'مدیر کامل'
+        else:
+            context['management_level'] = 'کاربر دارای مجوز مدیریت'
+    if resource is not None:
+        root = BY_MODEL[resource.parent] if resource.parent is not None else resource
+        context['active_module'] = next((module for module in modules if module['key'] == module_key(root)), None)
+    return context

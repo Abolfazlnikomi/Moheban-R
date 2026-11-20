@@ -56,6 +56,8 @@ def report_item(attachment):
 @require_safe
 @never_cache
 def detail(request, pk):
+    from announcements.models import Announcement
+
     gathering = get_object_or_404(Gathering.visible().prefetch_related('units__parent', 'units__unit_type'), pk=pk)
     notices = GatheringNotice.visible().filter(gathering=gathering)
     reports = GatheringReport.visible().filter(gathering=gathering).prefetch_related('assets')
@@ -65,6 +67,7 @@ def detail(request, pk):
     ]
     return render(request, 'night_gatherings/detail.html', {
         'gathering': gathering, 'notices': notices, 'report_list': report_list, 'scope': unit_filter(request),
+        'site_announcements': Announcement.visible().filter(gathering=gathering),
     })
 
 

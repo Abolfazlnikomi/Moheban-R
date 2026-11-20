@@ -1,145 +1,83 @@
-{% extends "base.html" %}
+{% extends "accounts/portal_base.html" %}
 {% load static %}
 {% block title %}داشبورد من | محبان{% endblock %}
-{% block body_class %} account-portal{% endblock %}
-{% block site_header %}{% endblock %}
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'site/account-dashboard.css' %}">
-<link rel="stylesheet" href="{% static 'site/account-portal.css' %}">
-{% endblock %}
-{% block content %}
-<div class="member-dashboard portal">
-  <svg class="portal-symbols" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" width="0" height="0">
-    <symbol id="portal-mark" viewBox="0 0 24 24"><path d="M12 2c-1 4-8 5-8 11v8h16v-8c0-6-7-7-8-11Z"/><path d="m12 8 1.3 3.7L17 13l-3.7 1.3L12 18l-1.3-3.7L7 13l3.7-1.3Z"/></symbol>
-    <symbol id="portal-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
-    <symbol id="portal-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20v-2a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v2"/></symbol>
-    <symbol id="portal-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 1 1 8 0v3m-4 4v3"/></symbol>
-    <symbol id="portal-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 10h18m-13 5h2m4 0h2m-8 3h2"/></symbol>
-    <symbol id="portal-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 6-3 7-3 9h18c0-2-3-3-3-9M10 21h4"/></symbol>
-    <symbol id="portal-heart" viewBox="0 0 24 24"><path d="M20 5a4.5 4.5 0 0 0-6.4 0L12 6.6 10.4 5A4.5 4.5 0 0 0 4 11.4l8 8 8-8A4.5 4.5 0 0 0 20 5Z"/></symbol>
-    <symbol id="portal-briefcase" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12a18 18 0 0 0 18 0m-9 0v4"/></symbol>
-    <symbol id="portal-exit" viewBox="0 0 24 24"><path d="M11 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h6m-2-8h12m-4-4 4 4-4 4"/></symbol>
-    <symbol id="portal-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
-    <symbol id="portal-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
-    <symbol id="portal-arrow" viewBox="0 0 24 24"><path d="M20 12H4m6-6-6 6 6 6"/></symbol>
-  </svg>
-  <aside class="portal-sidebar" aria-label="منوی حساب کاربری">
-    {% include "accounts/portal_sidebar.html" %}
-  </aside>
-  <dialog class="portal-drawer" id="account-menu" aria-label="منوی حساب کاربری">
-    <div class="portal-drawer-panel">
-      <button class="portal-icon-button portal-drawer-close" type="button" data-portal-close aria-label="بستن منو" autofocus>
-        <svg class="portal-icon" aria-hidden="true"><use href="#portal-close"/></svg>
-      </button>
-      {% include "accounts/portal_sidebar.html" %}
-    </div>
-  </dialog>
+{% block portal_title %}داشبورد{% endblock %}
+{% block portal_content_attributes %}id="account-overview" tabindex="-1"{% endblock %}
+{% block portal_body %}
+<header class="portal-welcome">
+  <div class="portal-welcome-copy">
+    <p class="portal-welcome-label"><span aria-hidden="true">◆</span> داشبورد من در محبان</p>
+    <h1>سلام، <bdi>{{ user.get_short_name|default:user.get_username }}</bdi></h1>
+    <p>اینجا می‌توانید از برنامه‌های هیئت باخبر شوید و حساب کاربری‌تان را مدیریت کنید.</p>
+    <a class="member-button portal-gold-button" href="#account-activity">تازه‌های هیئت <svg class="portal-icon" aria-hidden="true"><use href="#portal-arrow"/></svg></a>
+  </div>
+  <img class="portal-welcome-art" src="{% static 'site/mihrab.svg' %}" width="420" height="390" alt="">
+  <p class="portal-salawat" lang="ar">اللَّهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ وَآلِ مُحَمَّدٍ</p>
+</header>
 
-  <div class="portal-content" id="account-overview" tabindex="-1">
-    <header class="portal-topbar">
-      <div class="portal-topbar-title">
-        <button class="portal-icon-button portal-menu-toggle" type="button" data-portal-open aria-label="باز کردن منوی حساب" aria-controls="account-menu" aria-expanded="false" aria-haspopup="dialog">
-          <svg class="portal-icon" aria-hidden="true"><use href="#portal-menu"/></svg>
-        </button>
-        <span>حساب کاربری <span class="portal-topbar-separator" aria-hidden="true">/</span> <strong>داشبورد</strong></span>
-      </div>
-      <a class="portal-site-link" href="{% url 'home' %}">بازگشت به سایت <svg class="portal-icon" aria-hidden="true"><use href="#portal-arrow"/></svg></a>
-    </header>
+<section class="portal-quick-section" aria-labelledby="portal-quick-heading">
+  <h2 id="portal-quick-heading">دسترسی سریع</h2>
+  <div class="portal-shortcuts">
+    <a class="member-glass portal-shortcut" href="{% url 'night_gatherings:list' %}">
+      <span class="member-icon"><svg class="portal-icon" aria-hidden="true"><use href="#portal-calendar"/></svg></span>
+      <span><strong>برنامهٔ جلسات</strong><small>زمان و مکان مراسم</small></span>
+      <svg class="portal-icon portal-shortcut-arrow" aria-hidden="true"><use href="#portal-arrow"/></svg>
+    </a>
+    <a class="member-glass portal-shortcut" href="{% url 'announcements:list' %}">
+      <span class="member-icon member-icon-warm"><svg class="portal-icon" aria-hidden="true"><use href="#portal-bell"/></svg></span>
+      <span><strong>اطلاعیه‌ها</strong><small>خبرهای هیئت</small></span>
+      <svg class="portal-icon portal-shortcut-arrow" aria-hidden="true"><use href="#portal-arrow"/></svg>
+    </a>
+    <a class="member-glass portal-shortcut" href="{% url 'registrations_campaigns:volunteer' %}">
+      <span class="member-icon"><svg class="portal-icon" aria-hidden="true"><use href="#portal-heart"/></svg></span>
+      <span><strong>ثبت‌نام خُدام</strong><small>همراهی در برپایی مراسم</small></span>
+      <svg class="portal-icon portal-shortcut-arrow" aria-hidden="true"><use href="#portal-arrow"/></svg>
+    </a>
+  </div>
+</section>
 
-    <div class="portal-body">
-      <header class="portal-welcome">
-        <div class="portal-welcome-copy">
-          <p class="portal-welcome-label"><span aria-hidden="true">◆</span> داشبورد من در محبان</p>
-          <h1>سلام، <bdi>{{ user.get_short_name|default:user.get_username }}</bdi></h1>
-          <p>اینجا می‌توانید از برنامه‌های هیئت باخبر شوید و حساب کاربری‌تان را مدیریت کنید.</p>
-          <a class="member-button portal-gold-button" href="#account-activity">تازه‌های هیئت <svg class="portal-icon" aria-hidden="true"><use href="#portal-arrow"/></svg></a>
-        </div>
-        <img class="portal-welcome-art" src="{% static 'site/mihrab.svg' %}" width="420" height="390" alt="">
-        <p class="portal-salawat" lang="ar">اللَّهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ وَآلِ مُحَمَّدٍ</p>
-      </header>
-
-      <section class="portal-quick-section" aria-labelledby="portal-quick-heading">
-        <h2 id="portal-quick-heading">دسترسی سریع</h2>
-        <div class="portal-shortcuts">
-          <a class="member-glass portal-shortcut" href="{% url 'night_gatherings:list' %}">
-            <span class="member-icon"><svg class="portal-icon" aria-hidden="true"><use href="#portal-calendar"/></svg></span>
-            <span><strong>برنامهٔ جلسات</strong><small>زمان و مکان مراسم</small></span>
-            <svg class="portal-icon portal-shortcut-arrow" aria-hidden="true"><use href="#portal-arrow"/></svg>
-          </a>
-          <a class="member-glass portal-shortcut" href="{% url 'announcements:list' %}">
-            <span class="member-icon member-icon-warm"><svg class="portal-icon" aria-hidden="true"><use href="#portal-bell"/></svg></span>
-            <span><strong>اطلاعیه‌ها</strong><small>خبرهای هیئت</small></span>
-            <svg class="portal-icon portal-shortcut-arrow" aria-hidden="true"><use href="#portal-arrow"/></svg>
-          </a>
-          <a class="member-glass portal-shortcut" href="{% url 'registrations_campaigns:volunteer' %}">
-            <span class="member-icon"><svg class="portal-icon" aria-hidden="true"><use href="#portal-heart"/></svg></span>
-            <span><strong>ثبت‌نام خُدام</strong><small>همراهی در برپایی مراسم</small></span>
-            <svg class="portal-icon portal-shortcut-arrow" aria-hidden="true"><use href="#portal-arrow"/></svg>
-          </a>
-        </div>
-      </section>
-
-      <section class="portal-activity" id="account-activity" tabindex="-1" aria-labelledby="portal-activity-heading">
-        <h2 id="portal-activity-heading">تازه‌های هیئت</h2>
-        <div class="portal-activity-grid">
-          <article class="member-glass portal-feed-card">
-            <h3>نزدیک‌ترین جلسه</h3>
-            {% if next_gathering %}
-              <a class="portal-featured-link" href="{{ next_gathering.get_absolute_url }}">{{ next_gathering.title }}</a>
-              <p><time datetime="{{ next_gathering.starts_at|date:'c' }}">{{ next_gathering.starts_at|date:"j F، H:i" }}</time> · {{ next_gathering.venue }}</p>
-            {% else %}
-              <p>هنوز برنامهٔ عمومی جدیدی اعلام نشده است.</p>
-            {% endif %}
-            <a class="portal-text-link" href="{% url 'night_gatherings:list' %}">مشاهدهٔ همهٔ جلسات <span aria-hidden="true">←</span></a>
-          </article>
-          <article class="member-glass portal-feed-card">
-            <h3>آخرین اطلاعیه‌ها</h3>
-            {% if recent_announcements %}
-              <ul class="portal-announcements">
-                {% for item in recent_announcements %}<li><a href="{{ item.get_absolute_url }}">{{ item.title }}</a></li>{% endfor %}
-              </ul>
-            {% else %}
-              <p>هنوز اطلاعیهٔ عمومی منتشر نشده است.</p>
-            {% endif %}
-            <a class="portal-text-link" href="{% url 'announcements:list' %}">همهٔ اطلاعیه‌ها <span aria-hidden="true">←</span></a>
-          </article>
-        </div>
-      </section>
-
-      <div class="member-overview portal-settings">
-        <section class="member-glass member-tile" id="account-profile" tabindex="-1" aria-labelledby="member-profile-heading">
-          <span class="member-icon"><svg class="portal-icon" aria-hidden="true"><use href="#portal-user"/></svg></span>
-          <div class="member-tile-content">
-            <h2 id="member-profile-heading">پروفایل من</h2>
-            <dl class="member-profile">
-              <div><dt>نام کاربری</dt><dd><bdi>{{ user.get_username }}</bdi></dd></div>
-              <div><dt>نوع دسترسی</dt><dd>{{ management_level|default:"عضو سایت" }}</dd></div>
-            </dl>
-          </div>
-        </section>
-        <section class="member-glass member-tile" id="account-security" tabindex="-1" aria-labelledby="member-security-heading">
-          <span class="member-icon member-icon-warm"><svg class="portal-icon" aria-hidden="true"><use href="#portal-lock"/></svg></span>
-          <div class="member-tile-content">
-            <h2 id="member-security-heading">امنیت حساب</h2>
-            <p>برای محافظت از حسابتان، رمزی انتخاب کنید که در سایت دیگری استفاده نمی‌کنید.</p>
-            <a class="member-button member-button-primary" href="{% url 'password_change' %}">تغییر رمز عبور <span aria-hidden="true">←</span></a>
-          </div>
-        </section>
-      </div>
-
-      {% if management_modules %}
-        <section class="member-section" id="account-management" tabindex="-1" aria-labelledby="management-heading">
-          <div class="member-section-heading">
-            <p class="member-kicker">مدیریت سایت</p>
-            <h2 id="management-heading">دسترسی‌های مدیریتی من</h2>
-            <p>برای مدیریت محتوای سایت، یکی از ابزارهای مجازتان را باز کنید.</p>
-            <a class="member-button member-button-primary" href="{% url 'staff_panel:index' %}">ورود به میز کار مدیریت <span aria-hidden="true">←</span></a>
-          </div>
-          {% include "workspace/resource_cards.html" with modules=management_modules %}
-        </section>
+<section class="portal-activity" id="account-activity" tabindex="-1" aria-labelledby="portal-activity-heading">
+  <h2 id="portal-activity-heading">تازه‌های هیئت</h2>
+  <div class="portal-activity-grid">
+    <article class="member-glass portal-feed-card">
+      <h3>نزدیک‌ترین جلسه</h3>
+      {% if next_gathering %}
+        <a class="portal-featured-link" href="{{ next_gathering.get_absolute_url }}">{{ next_gathering.title }}</a>
+        <p><time datetime="{{ next_gathering.starts_at|date:'c' }}">{{ next_gathering.starts_at|date:"j F، H:i" }}</time> · {{ next_gathering.venue }}</p>
+      {% else %}
+        <p>هنوز برنامهٔ عمومی جدیدی اعلام نشده است.</p>
       {% endif %}
+      <a class="portal-text-link" href="{% url 'night_gatherings:list' %}">مشاهدهٔ همهٔ جلسات <span aria-hidden="true">←</span></a>
+    </article>
+    <article class="member-glass portal-feed-card">
+      <h3>آخرین اطلاعیه‌ها</h3>
+      {% if recent_announcements %}
+        <ul class="portal-announcements">
+          {% for item in recent_announcements %}<li><a href="{{ item.get_absolute_url }}">{{ item.title }}</a></li>{% endfor %}
+        </ul>
+      {% else %}
+        <p>هنوز اطلاعیهٔ عمومی منتشر نشده است.</p>
+      {% endif %}
+      <a class="portal-text-link" href="{% url 'announcements:list' %}">همهٔ اطلاعیه‌ها <span aria-hidden="true">←</span></a>
+    </article>
+  </div>
+</section>
+
+<section class="member-glass member-tile portal-settings" id="account-profile" tabindex="-1" aria-labelledby="member-profile-heading">
+  <span class="member-icon"><svg class="portal-icon" aria-hidden="true"><use href="#portal-user"/></svg></span>
+  <div class="member-tile-content">
+    <h2 id="member-profile-heading">پروفایل و امنیت حساب</h2>
+    <div class="member-overview portal-settings-details">
+      <dl class="member-profile">
+        <div><dt>نام کاربری</dt><dd><bdi>{{ user.get_username }}</bdi></dd></div>
+        <div><dt>نوع دسترسی</dt><dd>{{ management_level|default:"عضو سایت" }}</dd></div>
+      </dl>
+      <div class="member-tile-content">
+        <h3>امنیت حساب</h3>
+        <p>برای محافظت از حسابتان، رمزی انتخاب کنید که در سایت دیگری استفاده نمی‌کنید.</p>
+        <a class="member-button member-button-primary" href="{% url 'password_change' %}">تغییر رمز عبور <span aria-hidden="true">←</span></a>
+      </div>
     </div>
   </div>
-</div>
+</section>
 {% endblock %}
-{% block extra_js %}<script src="{% static 'site/account-portal.js' %}" defer></script>{% endblock %}

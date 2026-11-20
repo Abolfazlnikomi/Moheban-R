@@ -1,16 +1,16 @@
-{% extends "base.html" %}
+{% extends "accounts/portal_base.html" %}
 {% load static %}
-{% block title %}{% if resource %}{{ resource.title }} | {% endif %}میز کار مدیریت محبان{% endblock %}
+{% block title %}{% firstof resource.title active_module.name %} | محبان{% endblock %}
+{% block portal_title %}{% firstof resource.title active_module.name %}{% endblock %}
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'site/account-dashboard.css' %}">
+{{ block.super }}
 <link rel="stylesheet" href="{% static 'site/workspace.css' %}">
 {% endblock %}
-{% block content %}
-<div class="member-dashboard">
-  <div class="member-dashboard-inner workspace">
-    <nav class="workspace-nav" aria-label="مسیر میز کار">
+{% block portal_body %}
+  <div class="workspace">
+    <nav class="workspace-nav" aria-label="مسیر بخش">
       <a href="{% url 'account' %}">حساب کاربری</a>
-      <a href="{% url 'staff_panel:index' %}">میز کار مدیریت</a>
+      {% if active_module and request.path != active_module.url %}<a href="{{ active_module.url }}">{{ active_module.name }}</a>{% endif %}
       {% if parent_url %}<a href="{{ parent_url }}">{{ parent }}</a>{% endif %}
       {% if list_url and request.path != list_url %}<a href="{{ list_url }}">{{ resource.title }}</a>{% endif %}
     </nav>
@@ -20,6 +20,11 @@
       </ul>
     {% endif %}
     {% block workspace %}{% endblock %}
+    {% if subsection_links %}
+      <section class="workspace-subsections" aria-labelledby="workspace-subsections-heading">
+        <h2 id="workspace-subsections-heading">زیربخش‌های {{ subsection_parent }}</h2>
+        {% include "workspace/tiles.html" with links=subsection_links %}
+      </section>
+    {% endif %}
   </div>
-</div>
 {% endblock %}

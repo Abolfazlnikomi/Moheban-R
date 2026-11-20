@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}{% if archived %}آرشیو اطلاعیه‌ها{% else %}اطلاعیه‌ها{% endif %} | محبان{% endblock %}
+{% block content %}
+<div class="account-panel unit-page">
+  <h1>{% if archived %}آرشیو اطلاعیه‌ها{% else %}آخرین اطلاعیه‌ها{% endif %}</h1>
+  {% if archived %}
+    <a href="{% url 'announcements:list' %}{{ scope.query }}">آخرین اطلاعیه‌ها</a>
+  {% else %}
+    <a href="{% url 'announcements:archive' %}{{ scope.query }}">مشاهدهٔ آرشیو اطلاعیه‌ها</a>
+  {% endif %}
+  {% include "dorm_heiat/filter_form.html" %}
+  {% for item in page %}
+    <article>
+      <h2><a href="{{ item.get_absolute_url }}{{ scope.query }}">{{ item.title }}</a></h2>
+      <time datetime="{{ item.published_at|date:'c' }}">{{ item.published_at|date:"Y/m/d، H:i" }}</time>
+      {% if item.summary %}<p>{{ item.summary }}</p>{% endif %}
+    </article>
+  {% empty %}
+    <p>اطلاعیه‌ای برای نمایش پیدا نشد.</p>
+  {% endfor %}
+  {% if page.has_other_pages %}
+    <nav aria-label="صفحه‌بندی">
+      {% if page.has_previous %}<a href="{% querystring page=page.previous_page_number %}">صفحهٔ قبل</a>{% endif %}
+      <span>{{ page.number }} از {{ page.paginator.num_pages }}</span>
+      {% if page.has_next %}<a href="{% querystring page=page.next_page_number %}">صفحهٔ بعد</a>{% endif %}
+    </nav>
+  {% endif %}
+</div>
+{% endblock %}

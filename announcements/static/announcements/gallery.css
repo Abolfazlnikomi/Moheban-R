@@ -1,0 +1,15 @@
+.announcement-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+    gap: .75rem;
+}
+.announcement-gallery a { display: block; }
+.announcement-gallery img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: contain;
+    background: #e8efeb;
+    border: 1px solid #d8e4dc;
+    border-radius: .9rem;
+}

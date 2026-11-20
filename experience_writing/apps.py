@@ -4,3 +4,4 @@ from django.apps import AppConfig
 class ExperienceWritingConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'experience_writing'
+    verbose_name = 'تجربه‌نگاری'

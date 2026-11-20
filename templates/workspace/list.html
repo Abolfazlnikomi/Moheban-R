@@ -13,6 +13,11 @@
     <form class="workspace-search" method="get" action="{{ list_url }}">
       <label for="workspace-q">جست‌وجو در فهرست</label>
       <input type="search" id="workspace-q" name="q" value="{{ query }}" maxlength="120">
+      {% if search_filters %}
+        {% for filter in search_filters %}
+          <div>{{ filter.label_tag }} {{ filter }} {{ filter.errors }}</div>
+        {% endfor %}
+      {% endif %}
       <button class="member-button member-button-primary" type="submit">جست‌وجو</button>
       {% if query %}<a href="{{ list_url }}">پاک کردن جست‌وجو</a>{% endif %}
     </form>

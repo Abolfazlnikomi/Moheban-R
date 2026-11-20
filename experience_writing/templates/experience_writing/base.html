@@ -1,0 +1,16 @@
+{% extends "accounts/portal_base.html" %}
+{% load static %}
+{% block title %}تجربه‌نگاری | محبان{% endblock %}
+{% block portal_title %}تجربه‌نگاری{% endblock %}
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'site/workspace.css' %}">
+{% endblock %}
+{% block portal_body %}
+<div class="workspace">
+  {% if request.resolver_match.url_name != 'index' %}
+    <nav class="workspace-nav" aria-label="مسیر بخش"><a href="{% url 'experience_writing:index' %}">بازگشت به تجربه‌ها</a></nav>
+  {% endif %}
+  {% block experiences %}{% endblock %}
+</div>
+{% endblock %}

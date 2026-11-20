@@ -13,7 +13,7 @@ from dorm_heiat.models import Unit, UnitType
 from night_gatherings.models import Gathering, GatheringReport, ReportAsset
 
 from .admin_roles import FULL_ADMIN_GROUP
-from .workspace_registry import RESOURCES
+from .workspace_registry import MODULES, RESOURCES, module_key
 
 
 @override_settings(PASSWORD_HASHERS=['django.contrib.auth.hashers.MD5PasswordHasher'])
@@ -27,14 +27,35 @@ class AccountTests(TestCase):
     def test_admin_and_custom_workspace_render_in_persian(self):
         self.client.force_login(get_user_model().objects.create_superuser(username='manager'))
         for namespace in ('admin', 'staff_panel'):
-            index = self.client.get(reverse(f'{namespace}:index'))
-            self.assertContains(index, '<html lang="fa" dir="rtl">')
             group_form = self.client.get(reverse(f'{namespace}:auth_group_add'))
+            self.assertContains(group_form, '<html lang="fa" dir="rtl">')
             self.assertContains(group_form, 'انتشار تجمع شبانه')
             if namespace == 'staff_panel':
-                self.assertTemplateUsed(index, 'workspace/index.html')
                 self.assertTemplateUsed(group_form, 'workspace/form.html')
                 self.assertNotContains(group_form, '/static/admin/')
+
+    def test_legacy_workspace_address_redirects_to_account(self):
+        self.assertRedirects(self.client.get('/staff/'), reverse('account'), fetch_redirect_response=False)
+        self.client.force_login(get_user_model().objects.create_superuser(username='manager'))
+        self.assertRedirects(self.client.get('/staff/'), reverse('account'))
+        dashboard = self.client.get(reverse('account'))
+        self.assertNotContains(dashboard, 'میز کار مدیریت')
+        self.assertNotContains(dashboard, 'href="/staff/"')
+        for key in MODULES:
+            url = reverse('staff_panel:section', args=[key])
+            self.assertContains(dashboard, f'class="portal-management-link" href="{url}"', count=2)
+            section = self.client.get(url)
+            self.assertTemplateUsed(section, 'workspace/section.html')
+            for resource in RESOURCES:
+                if resource.parent is None:
+                    link = f'class="member-glass workspace-tile" href="{resource.url("changelist")}"'
+                    if module_key(resource) == key:
+                        self.assertContains(section, link)
+                    else:
+                        self.assertNotContains(section, link)
+        for resource in RESOURCES:
+            if resource.parent is None:
+                self.assertNotContains(dashboard, f'href="{resource.url("changelist")}"')
 
     def test_login_redirects_and_inactive_account(self):
         self.assertRedirects(self.client.get('/account/'), '/login/?next=/account/')
@@ -58,7 +79,11 @@ class AccountTests(TestCase):
             self.assertIsNotNone(finders.find(asset))
         self.assertContains(dashboard, 'id="account-menu"')
         self.assertContains(dashboard, 'aria-controls="account-menu"')
-        self.assertContains(dashboard, 'href="#account-security"')
+        self.assertContains(dashboard, 'id="account-activity"')
+        self.assertContains(dashboard, 'href="#account-activity"', count=1)
+        self.assertContains(dashboard, 'href="#account-profile"', count=2)
+        self.assertContains(dashboard, 'id="member-profile-heading">پروفایل و امنیت حساب</h2>')
+        self.assertNotContains(dashboard, 'account-security')
         self.assertContains(dashboard, 'action="/logout/"')
         self.assertNotContains(dashboard, 'id="site-nav"')
         self.assertContains(dashboard, '<bdi>member</bdi>')
@@ -118,14 +143,14 @@ class AccountTests(TestCase):
         password_url = reverse('staff_panel:auth_user_password_change', args=[self.user.pk])
         self.client.force_login(self.user)
         self.assertEqual(self.client.get('/admin/').status_code, 302)
-        self.assertEqual(self.client.get('/staff/').status_code, 403)
+        self.assertEqual(self.client.get(report_list).status_code, 403)
         self.assertNotContains(self.client.get('/account/'), 'دسترسی‌های مدیریتی من')
 
         self.user.is_staff = True
         self.user.save()
-        self.assertEqual(self.client.get('/staff/').status_code, 403)
+        self.assertEqual(self.client.get(report_list).status_code, 403)
         self.client.logout()
-        self.assertRedirects(self.client.get('/staff/'), '/login/?next=/staff/')
+        self.assertRedirects(self.client.get(report_list), f'/login/?next={report_list}')
 
         group = Group.objects.create(name='Report readers')
         group.permissions.add(
@@ -135,19 +160,31 @@ class AccountTests(TestCase):
         self.user.groups.add(group)
         self.client.force_login(self.user)
         self.assertEqual(self.client.get('/admin/').status_code, 302)
-        self.assertEqual(self.client.get('/staff/').status_code, 200)
         dashboard = self.client.get('/account/')
         self.assertContains(dashboard, 'دسترسی‌های مدیریتی من')
-        self.assertContains(dashboard, f'href="{report_list}"')
-        self.assertContains(dashboard, 'class="account-permissions">مشاهده</span>')
+        reports_section = reverse('staff_panel:section', args=['reports_media'])
+        self.assertContains(dashboard, f'class="portal-management-link" href="{reports_section}"', count=2)
+        self.assertNotContains(dashboard, f'href="{report_list}"')
+        section = self.client.get(reports_section)
+        self.assertContains(section, f'class="member-glass workspace-tile" href="{report_list}"')
+        self.assertNotContains(section, reverse('staff_panel:reports_media_category_changelist'))
+        self.assertEqual(self.client.get(reverse('staff_panel:section', args=['auth'])).status_code, 403)
+        self.assertNotContains(dashboard, '#account-management')
         self.assertNotContains(dashboard, f'href="{user_list}"')
-        self.assertContains(dashboard, 'href="/staff/"')
+        self.assertNotContains(dashboard, 'href="/staff/"')
         self.assertNotContains(dashboard, '<iframe')
         self.assertNotContains(dashboard, 'href="/admin/')
         self.assertEqual(dashboard.headers['X-Frame-Options'], 'DENY')
         report_response = self.client.get(report_list)
         self.assertEqual(report_response.status_code, 200)
         self.assertTemplateUsed(report_response, 'workspace/list.html')
+        self.assertContains(report_response, f'href="{reports_section}" aria-current="location"', count=2)
+        self.assertContains(report_response, 'href="/account/#account-profile"', count=2)
+        self.assertNotContains(report_response, 'account-security')
+        self.assertNotContains(report_response, '#account-activity')
+        self.assertContains(report_response, 'id="account-menu"')
+        self.assertNotContains(report_response, f'href="{user_list}"')
+        self.assertNotContains(report_response, 'میز کار مدیریت')
         self.assertEqual(report_response.headers['X-Frame-Options'], 'DENY')
         self.assertEqual(self.client.get(user_list).status_code, 403)
         self.assertEqual(self.client.get(password_url).status_code, 403)
@@ -167,15 +204,17 @@ class AccountTests(TestCase):
         self.assertTrue(staff.has_perm('registrations_campaigns.export_campaignentry'))
         self.assertFalse(staff.is_superuser)
 
+        group_list = reverse('staff_panel:auth_group_changelist')
         response = self.client.post('/login/', {
-            'username': staff.username, 'password': self.password, 'next': '/staff/',
+            'username': staff.username, 'password': self.password, 'next': group_list,
         })
-        self.assertRedirects(response, '/staff/')
+        self.assertRedirects(response, group_list)
         dashboard = self.client.get('/account/')
         self.assertContains(dashboard, 'مدیر کامل')
-        self.assertContains(dashboard, 'انتشار')
-        self.assertContains(dashboard, 'دریافت خروجی')
-        self.assertContains(dashboard, 'href="/staff/auth/user/"')
+        auth_section = reverse('staff_panel:section', args=['auth'])
+        self.assertContains(dashboard, f'class="portal-management-link" href="{auth_section}"', count=2)
+        for section in ('user', 'group'):
+            self.assertContains(self.client.get(auth_section), f'class="member-glass workspace-tile" href="/staff/auth/{section}/"')
         self.assertEqual(self.client.get('/admin/').status_code, 302)
         self.assertEqual(self.client.get(reverse('staff_panel:auth_group_changelist')).status_code, 200)
         add_url = reverse('staff_panel:auth_user_add')
@@ -208,7 +247,7 @@ class AccountTests(TestCase):
         self.assertFalse(created.groups.filter(pk=full_group.pk).exists())
 
         staff.groups.remove(full_group)
-        self.assertEqual(self.client.get('/staff/').status_code, 403)
+        self.assertEqual(self.client.get(group_list).status_code, 403)
         created.groups.add(full_group)
         created.is_staff = False
         created.save()
@@ -224,10 +263,27 @@ class AccountTests(TestCase):
                 self.assertTemplateUsed(response, 'workspace/list.html')
                 self.assertNotContains(response, '/static/admin/')
                 form_response = self.client.get(resource.url('add'))
-                if resource.model._meta.model_name in ('campaignentry', 'volunteerapplication'):
+                if resource.model._meta.model_name in ('campaignentry', 'volunteerapplication', 'footersettings'):
                     self.assertEqual(form_response.status_code, 403)
                 else:
                     self.assertTemplateUsed(form_response, 'workspace/form.html')
+
+    def test_management_link_opens_add_form_for_add_only_permission(self):
+        self.user.is_staff = True
+        self.user.save()
+        self.user.user_permissions.add(Permission.objects.get(
+            content_type__app_label='announcements', codename='add_announcement',
+        ))
+        self.client.force_login(self.user)
+        list_url = reverse('staff_panel:announcements_announcement_changelist')
+        add_url = reverse('staff_panel:announcements_announcement_add')
+        dashboard = self.client.get(reverse('account'))
+        section_url = reverse('staff_panel:section', args=['announcements'])
+        self.assertContains(dashboard, f'class="portal-management-link" href="{section_url}"', count=2)
+        self.assertContains(self.client.get(section_url), f'class="member-glass workspace-tile" href="{add_url}"')
+        self.assertNotContains(dashboard, f'href="{list_url}"')
+        self.assertEqual(self.client.get(list_url).status_code, 403)
+        self.assertContains(self.client.get(add_url), f'href="{section_url}" aria-current="location"', count=2)
 
     def test_workspace_creates_searches_edits_and_confirms_deletion(self):
         self.user.is_staff = True
@@ -269,6 +325,12 @@ class AccountTests(TestCase):
         self.client.force_login(self.user)
         prefix = 'staff_panel:night_gatherings_reportasset_'
         add_url = reverse(prefix + 'add', args=[report.pk])
+        list_url = reverse(prefix + 'changelist', args=[report.pk])
+        parent_url = reverse('staff_panel:night_gatherings_gatheringreport_detail', args=[report.pk])
+        detail = self.client.get(parent_url)
+        self.assertContains(detail, f'href="{list_url}"')
+        self.assertNotContains(detail, f'href="{add_url}"')
+        self.assertContains(self.client.get(list_url), f'href="{list_url}" aria-current="page"')
         values = {'embed': 'https://www.aparat.com/v/abc123', 'caption': 'Clip', 'order': 0, 'report': other.pk}
         self.assertEqual(self.client.post(add_url, values).status_code, 403)
         self.user.user_permissions.add(Permission.objects.get(
@@ -282,6 +344,8 @@ class AccountTests(TestCase):
         asset.save()
         change_url = reverse(prefix + 'change', args=[report.pk, asset.pk])
         response = self.client.get(change_url)
+        gatherings_section = reverse('staff_panel:section', args=['night_gatherings'])
+        self.assertContains(response, f'href="{gatherings_section}" aria-current="location"', count=2)
         self.assertContains(response, 'cover.jpg')
         self.assertNotContains(response, 'private-storage/')
         self.assertNotContains(response, '<iframe')
