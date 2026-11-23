@@ -1,9 +1,14 @@
 {% extends "base.html" %}
 {% load static %}
-{% block extra_css %}<link rel="stylesheet" href="{% static 'reports_media/archive.css' %}">{% endblock %}
-{% block content %}
-<main class="reports">
-  {% block reports %}{% endblock %}
-</main>
+
+{% block extra_css %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'site/archive.css' %}?v=3.0">
+  <link rel="stylesheet" href="{% static 'django_ckeditor_5/dist/styles.css' %}">
 {% endblock %}
 
+{% block content %}
+<div class="reports">
+  {% block reports %}{% endblock %}
+</div>
+{% endblock %}

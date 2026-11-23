@@ -23,6 +23,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # پکیج‌های ثالث
+    'django_ckeditor_5',
+
     # اپ‌های پروژه
     'dorm_heiat',
     'announcements',
@@ -98,7 +101,7 @@ TIME_ZONE = 'Asia/Tehran'
 USE_I18N = True
 USE_TZ = True
 
-# Static files
+# Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
@@ -112,3 +115,44 @@ LOGIN_URL = 'login'
 AUTHENTICATION_BACKENDS = ['MohebanAE.admin_roles.SiteModelBackend']
 LOGIN_REDIRECT_URL = 'account'
 LOGOUT_REDIRECT_URL = 'home'
+
+# ==============================================================================
+# پیکربندی CKEditor 5 برای ویرایش متن گزارش‌ها
+# ==============================================================================
+CKEDITOR_5_CONFIGS = {
+    'default': {
+        'toolbar': ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote'],
+    },
+    'extends': {
+        'language': 'fa',
+        'blockToolbar': [
+            'paragraph', 'heading2', 'heading3', 'heading4',
+            '|',
+            'bulletedList', 'numberedList',
+            '|',
+            'blockQuote',
+        ],
+        'toolbar': [
+            'heading', '|',
+            'bold', 'italic', 'underline', 'strikethrough', '|',
+            'link', 'insertTable', '|',
+            'bulletedList', 'numberedList', 'blockQuote', '|',
+            'alignment', 'horizontalLine', '|',
+            'undo', 'redo'
+        ],
+        'table': {
+            'contentToolbar': [
+                'tableColumn', 'tableRow', 'mergeTableCells',
+                'tableProperties', 'tableCellProperties'
+            ]
+        },
+        'heading': {
+            'options': [
+                {'model': 'paragraph', 'title': 'پاراگراف عادی', 'class': 'ck-heading_paragraph'},
+                {'model': 'heading2', 'view': 'h2', 'title': 'سرتیتر ۲', 'class': 'ck-heading_heading2'},
+                {'model': 'heading3', 'view': 'h3', 'title': 'سرتیتر ۳', 'class': 'ck-heading_heading3'},
+                {'model': 'heading4', 'view': 'h4', 'title': 'سرتیتر ۴', 'class': 'ck-heading_heading4'},
+            ]
+        }
+    }
+}

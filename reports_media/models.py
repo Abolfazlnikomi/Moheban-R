@@ -1,11 +1,13 @@
 from uuid import uuid4
 
+import bleach
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
 from django.urls import reverse
 from django.utils import timezone
+from django_ckeditor_5.fields import CKEditor5Field  # یا ckeditor.fields.RichTextField
 
 from dorm_heiat.models import UnitContent, discoverable
 
@@ -67,9 +69,21 @@ class MediaPost(UnitContent):
         AUDIO = 'audio', 'فایل صوتی'
         MIXED = 'mixed', 'ترکیبی'
 
+    # تگ‌های مجاز امن برای محتوای ویرایشگر CKEditor
+    ALLOWED_TAGS = [
+        'p', 'h2', 'h3', 'h4', 'strong', 'em', 'u', 's', 'ol', 'ul', 'li',
+        'blockquote', 'a', 'hr', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'br'
+    ]
+    ALLOWED_ATTRIBUTES = {
+        'a': ['href', 'title', 'target', 'rel'],
+        'table': ['class'],
+        'td': ['colspan', 'rowspan'],
+        'th': ['colspan', 'rowspan'],
+    }
+
     title = models.CharField('عنوان', max_length=240)
-    summary = models.TextField('خلاصه', max_length=600)
-    description = models.TextField('توضیحات')
+    summary = models.TextField('خلاصه', max_length=600, help_text='چکیده مختصر که در کارت‌های آرشیو نمایش داده می‌شود.')
+    description = CKEditor5Field('متن کامل گزارش', config_name='extends')
     event_date = models.DateField('تاریخ مراسم', db_index=True)
     published_at = models.DateTimeField('زمان انتشار', null=True, blank=True, help_text='برای انتشار فوری خالی بگذارید.')
     category = models.ForeignKey(Category, models.PROTECT, verbose_name='دسته‌بندی')
@@ -95,6 +109,17 @@ class MediaPost(UnitContent):
     def __str__(self):
         return self.title
 
+    def clean(self):
+        super().clean()
+        # پاک‌سازی و کنترل امنیتی HTML تولیدشده توسط CKEditor
+        if self.description:
+            self.description = bleach.clean(
+                self.description,
+                tags=self.ALLOWED_TAGS,
+                attributes=self.ALLOWED_ATTRIBUTES,
+                strip=True
+            )
+
     def save(self, *args, **kwargs):
         if self.status == self.Status.PUBLISHED and self.published_at is None:
             self.published_at = timezone.now()
@@ -108,11 +133,12 @@ class MediaPost(UnitContent):
 
 class MediaFile(models.Model):
     post = models.ForeignKey(MediaPost, models.CASCADE, related_name='attachments', verbose_name='محتوا')
-    file = models.FileField('فایل', upload_to=upload_path, blank=True, validators=[validate_upload],
-                             help_text=UPLOAD_HELP)
-    embed = models.CharField('پیوند یا کد iframe', max_length=3000, blank=True, validators=[validate_embed],
-                             help_text='در صورت درج هر دو، پیوند در اولویت است و فایل محلی برای دریافت می‌ماند.')
-    caption = models.CharField('عنوان رسانه', max_length=200, blank=True)
+    file = models.FileField('فایل بارگذاری‌شده', upload_to=upload_path, blank=True, validators=[validate_upload],
+                            help_text=UPLOAD_HELP)
+    embed = models.CharField('پیوند یا کد اشتراک (آپارات، یوتیوب و...)', max_length=3000, blank=True,
+                             validators=[validate_embed],
+                             help_text='می‌توانید لینک ویدئوی آپارات، یوتیوب یا فایل صوتی را اینجا قرار دهید.')
+    caption = models.CharField('عنوان یا توضیح رسانه', max_length=200, blank=True)
     order = models.PositiveIntegerField('ترتیب نمایش', default=0)
     private = models.BooleanField('خصوصی (فقط مدیر مجاز)', default=False)
 
@@ -124,7 +150,7 @@ class MediaFile(models.Model):
     def clean(self):
         super().clean()
         if not self.file and not self.embed:
-            raise ValidationError('یک فایل یا پیوند رسانه وارد کنید.')
+            raise ValidationError('حداقل یکی از موارد «فایل بارگذاری‌شده» یا «پیوند رسانه» باید وارد شود.')
 
     def __str__(self):
         return self.caption or f'رسانهٔ {self.post}'

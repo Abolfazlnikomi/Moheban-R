@@ -1,35 +1,360 @@
 {% extends "workspace/base.html" %}
+
 {% block workspace %}
-<header class="member-hero workspace-hero">
-  <div>
-    <p class="member-kicker">{{ resource.title }}</p>
-    <h1>{{ object }}</h1>
-  </div>
-  <div class="workspace-actions">
-    {% if change_url %}<a class="member-button member-button-glass" href="{{ change_url }}">ویرایش</a>{% endif %}
-    {% if password_url %}<a class="member-button member-button-glass" href="{{ password_url }}">تنظیم رمز عبور</a>{% endif %}
-    {% if export_url %}<a class="member-button member-button-glass" href="{{ export_url }}">خروجی اکسل مشارکت‌کنندگان</a>{% endif %}
-  </div>
-</header>
-<section class="member-glass workspace-panel" aria-labelledby="workspace-details">
-  <h2 id="workspace-details">جزئیات</h2>
-  <dl class="workspace-details">
-    {% for field in fields %}
-      <div>
-        <dt>{{ field.label }}</dt>
-        <dd>
-          {% if field.url %}<a href="{{ field.url }}">{{ field.value }}</a>
-          {% elif field.answers %}<ul>{% for answer in field.answers %}<li><strong>{{ answer.label }}:</strong> {{ answer.value }}</li>{% endfor %}</ul>
-          {% elif field.value or field.value == 0 %}{{ field.value }}
-          {% else %}—{% endif %}
-        </dd>
-      </div>
-    {% endfor %}
-  </dl>
-  {% if delete_url %}
-    <div class="workspace-actions">
-      <a class="member-button workspace-danger" href="{{ delete_url }}">حذف مورد</a>
+<div class="clean-detail-wrap">
+
+  <!-- نوار بالای صفحه (Hero & Actions) -->
+  <div class="detail-hero-card">
+    <div class="hero-main-content">
+      {% if resource.title %}
+        <span class="hero-kicker-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+          {{ resource.title }}
+        </span>
+      {% endif %}
+      <h1 class="hero-title">{{ object }}</h1>
     </div>
-  {% endif %}
-</section>
+
+    <!-- دکمه‌های اقدام سریع -->
+    <div class="hero-actions-group">
+      {% if export_url %}
+        <a class="btn-detail-action btn-excel" href="{{ export_url }}">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          خروجی اکسل مشارکت‌کنندگان
+        </a>
+      {% endif %}
+
+      {% if password_url %}
+        <a class="btn-detail-action btn-secondary" href="{{ password_url }}">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          تنظیم رمز عبور
+        </a>
+      {% endif %}
+
+      {% if change_url %}
+        <a class="btn-detail-action btn-primary" href="{{ change_url }}">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+          ویرایش اطلاعات
+        </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- کارت اصلی نمایش جزئیات فیلدها -->
+  <div class="clean-card detail-card-body">
+    <div class="clean-card-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+      جزئیات و مشخصات ثبت‌شده
+    </div>
+
+    <div class="detail-grid">
+      {% for field in fields %}
+        <div class="detail-field-box">
+          <span class="detail-field-label">{{ field.label }}</span>
+          <div class="detail-field-value">
+            {% if field.url %}
+              <a href="{{ field.url }}" class="detail-link" target="_blank" rel="noopener">
+                {{ field.value }}
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+              </a>
+            {% elif field.answers %}
+              <ul class="nested-answers-list">
+                {% for answer in field.answers %}
+                  <li>
+                    <span class="ans-label">{{ answer.label }}:</span>
+                    <span class="ans-value">{{ answer.value }}</span>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% elif field.value or field.value == 0 %}
+              <span class="text-content">{{ field.value }}</span>
+            {% else %}
+              <span class="empty-badge">—</span>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- بخش عملیات حساس (حذف مورد) -->
+    {% if delete_url %}
+      <div class="danger-zone-section">
+        <div class="danger-info">
+          <strong>عملیات حساس و غیرقابل بازگشت</strong>
+          <span>در صورت حذف، این آیتم و تمام داده‌های مرتبط از پایگاه داده پاک خواهند شد.</span>
+        </div>
+        <a class="btn-detail-danger" href="{{ delete_url }}">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+          حذف مورد
+        </a>
+      </div>
+    {% endif %}
+
+  </div>
+
+</div>
+
+<style>
+  /* ساختار کلی صفحه */
+  .clean-detail-wrap {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 3.5rem;
+    font-family: inherit;
+    color: #1e293b;
+    direction: rtl;
+  }
+
+  /* کارت هدر بالا */
+  .detail-hero-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 1.6rem 1.8rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.2rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  }
+
+  .hero-main-content {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .hero-kicker-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #f0fdf4;
+    color: #059669;
+    border: 1px solid #bbf7d0;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    width: fit-content;
+  }
+
+  .hero-title {
+    font-size: 1.65rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+    line-height: 1.35;
+  }
+
+  /* دکمه‌های اکشن هدر */
+  .hero-actions-group {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .btn-detail-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 0.65rem 1.2rem;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    box-shadow: 0 3px 10px rgba(16, 185, 129, 0.24);
+  }
+  .btn-primary:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    box-shadow: 0 5px 14px rgba(16, 185, 129, 0.35);
+    transform: translateY(-1px);
+  }
+
+  .btn-secondary {
+    background: #f8fafc;
+    border: 1.5px solid #cbd5e1;
+    color: #334155;
+  }
+  .btn-secondary:hover {
+    background: #ffffff;
+    border-color: #94a3b8;
+    color: #0f172a;
+    transform: translateY(-1px);
+  }
+
+  .btn-excel {
+    background: #ecfdf5;
+    border: 1.5px solid #a7f3d0;
+    color: #065f46;
+  }
+  .btn-excel:hover {
+    background: #d1fae5;
+    border-color: #6ee7b7;
+    color: #047857;
+    transform: translateY(-1px);
+  }
+
+  /* کارت اصلی اطلاعات */
+  .clean-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 1.8rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  }
+
+  .clean-card-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #0f172a;
+    padding-bottom: 1.1rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  /* گرید فیلدها و جزئیات */
+  .detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  @media (max-width: 768px) {
+    .detail-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .detail-field-box {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 1rem 1.2rem;
+    background: #f8fafc;
+    border: 1px solid #eef2f6;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+  }
+  .detail-field-box:hover {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  }
+
+  .detail-field-label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #64748b;
+  }
+
+  .detail-field-value {
+    font-size: 0.94rem;
+    font-weight: 600;
+    color: #1e293b;
+    word-break: break-word;
+    line-height: 1.6;
+  }
+
+  .detail-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #059669;
+    text-decoration: none;
+    font-weight: 700;
+  }
+  .detail-link:hover {
+    text-decoration: underline;
+    color: #047857;
+  }
+
+  .empty-badge {
+    color: #94a3b8;
+    font-weight: normal;
+  }
+
+  /* زیرلیست‌های پاسخ‌ها */
+  .nested-answers-list {
+    list-style: none;
+    padding: 0;
+    margin: 4px 0 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .nested-answers-list li {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    display: flex;
+    gap: 6px;
+  }
+  .ans-label {
+    color: #475569;
+    font-weight: 700;
+  }
+  .ans-value {
+    color: #0f172a;
+  }
+
+  /* محدوده خطر / دکمه حذف */
+  .danger-zone-section {
+    margin-top: 2rem;
+    padding-top: 1.4rem;
+    border-top: 1px dashed #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .danger-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .danger-info strong {
+    font-size: 0.88rem;
+    color: #dc2626;
+  }
+  .danger-info span {
+    font-size: 0.8rem;
+    color: #64748b;
+  }
+
+  .btn-detail-danger {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0.65rem 1.25rem;
+    background: #fef2f2;
+    border: 1.5px solid #fecaca;
+    color: #dc2626;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 0.86rem;
+    font-weight: 700;
+    transition: all 0.2s ease;
+  }
+  .btn-detail-danger:hover {
+    background: #dc2626;
+    color: #ffffff;
+    border-color: #dc2626;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+    transform: translateY(-1px);
+  }
+</style>
 {% endblock %}

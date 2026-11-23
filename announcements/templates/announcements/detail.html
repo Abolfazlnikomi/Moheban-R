@@ -1,24 +1,74 @@
 {% extends "base.html" %}
 {% load static %}
+
 {% block title %}{{ item.title }} | اطلاعیه‌ها{% endblock %}
-{% block extra_css %}<link rel="stylesheet" href="{% static 'announcements/gallery.css' %}">{% endblock %}
+
+{% block extra_css %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'announcements/gallery.css' %}">
+{% endblock %}
+
 {% block content %}
-<div class="account-panel unit-page">
-  <a href="{% url 'announcements:archive' %}{{ scope.query }}">آرشیو اطلاعیه‌ها</a>
+<div class="account-panel unit-page announcement-detail">
+  <nav aria-label="ناوبری اطلاعیه‌ها">
+    <a href="{% url 'announcements:list' %}{{ scope.query }}">آخرین اطلاعیه‌ها</a>
+    <a href="{% url 'announcements:archive' %}{{ scope.query }}">آرشیو اطلاعیه‌ها</a>
+  </nav>
+
   <article>
     <h1>{{ item.title }}</h1>
-    <p>زمان انتشار: <time datetime="{{ item.published_at|date:'c' }}">{{ item.published_at|date:"Y/m/d، H:i" }}</time></p>
-    {% if item.summary %}<p>{{ item.summary }}</p>{% endif %}
-    {{ item.description|linebreaks }}
-    {% if gathering %}<p>برنامهٔ مرتبط: <a href="{{ gathering.get_absolute_url }}{{ scope.query }}">{{ gathering.title }}</a></p>{% endif %}
-    {% if item.units.all %}<p>واحدهای مرتبط: {{ item.units.all|join:"، " }}</p>{% endif %}
+
+    <p>
+      زمان انتشار:
+      <time datetime="{{ item.published_at|date:'c' }}">
+        {{ item.published_at|date:"Y/m/d، H:i" }}
+      </time>
+    </p>
+
+    {% if item.cover %}
+      <img
+        class="announcement-cover"
+        src="{% url 'announcements:cover' item.pk %}"
+        alt="عکس شاخص اطلاعیهٔ {{ item.title }}"
+        decoding="async"
+      >
+    {% endif %}
+
+    {% if item.summary %}
+      <p class="announcement-summary">{{ item.summary }}</p>
+    {% endif %}
+
+    <div class="announcement-body">
+      {{ item.description|linebreaks }}
+    </div>
+
+    {% if gathering %}
+      <p>
+        برنامهٔ مرتبط:
+        <a href="{{ gathering.get_absolute_url }}{{ scope.query }}">
+          {{ gathering.title }}
+        </a>
+      </p>
+    {% endif %}
+
+    {% if item.units.all %}
+      <p>واحدهای مرتبط: {{ item.units.all|join:"، " }}</p>
+    {% endif %}
+
     {% if item.images.all %}
       <section aria-labelledby="announcement-images">
         <h2 id="announcement-images">تصاویر اطلاعیه</h2>
         <div class="announcement-gallery">
           {% for image in item.images.all %}
             {% url 'announcements:image' image.pk as image_url %}
-            <a href="{{ image_url }}"><img src="{{ image_url }}" alt="تصویر {{ forloop.counter }} از {{ item.title }}" loading="lazy" decoding="async"></a>
+            <a href="{{ image_url }}" aria-label="نمایش تصویر {{ forloop.counter }} از {{ item.title }}">
+              <img
+                src="{{ image_url }}"
+                alt="تصویر {{ forloop.counter }} از {{ item.title }}"
+                loading="lazy"
+                decoding="async"
+              >
+            </a>
           {% endfor %}
         </div>
       </section>

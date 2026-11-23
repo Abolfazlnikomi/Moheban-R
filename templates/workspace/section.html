@@ -1,15 +1,574 @@
 {% extends "workspace/base.html" %}
+
 {% block workspace %}
-<header class="member-hero workspace-hero workspace-section-hero">
-  <div>
-    <p class="member-kicker">مدیریت محبان</p>
-    <h1>{{ active_module.name }}</h1>
-    <p class="member-hero-copy">برای شروع، یکی از زیربخش‌های این بخش را انتخاب کنید.</p>
-  </div>
-  <span class="workspace-section-icon"><svg class="portal-icon" aria-hidden="true"><use href="#portal-{{ active_module.icon }}"/></svg></span>
-</header>
-<section class="workspace-subsections" aria-labelledby="workspace-tools-heading">
-  <h2 id="workspace-tools-heading">زیربخش‌ها</h2>
-  {% include "workspace/tiles.html" with links=active_module.models %}
-</section>
+<div class="nx-workspace-container">
+
+  <!-- پس‌زمینه‌های نوری محو (Ambient Aurora Glows) -->
+  <div class="nx-ambient-glow nx-glow-1"></div>
+  <div class="nx-ambient-glow nx-glow-2"></div>
+
+  <!-- بنر هدر مدرن تعاملی -->
+  <header class="nx-hero-glass">
+    <div class="nx-hero-grid-pattern"></div>
+    <div class="nx-hero-inner">
+      <div class="nx-hero-text">
+        <div class="nx-pill-badge">
+          <span class="nx-pulse-dot">
+            <span class="nx-pulse-wave"></span>
+          </span>
+          <span class="nx-badge-text">پنل اختصاصی مدیریت</span>
+        </div>
+        <h1 class="nx-title">{{ active_module.name }}</h1>
+        <p class="nx-subtitle">
+          مرکز کنترل و مدیریت محتوا، رسانه‌ها و بخش‌های مرتبط؛ بخش مورد نظر خود را برای ادامه انتخاب کنید.
+        </p>
+      </div>
+
+      <div class="nx-hero-visual">
+        <div class="nx-glass-cube">
+          <div class="nx-glass-cube-inner">
+            <svg class="portal-icon" aria-hidden="true">
+              <use href="#portal-{{ active_module.icon|default:'layers' }}"/>
+            </svg>
+          </div>
+          <div class="nx-cube-reflect"></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- بخش اصلی کارت‌ها با ساختار Bento-Grid مدرن -->
+  <main class="nx-content-body">
+    <div class="nx-toolbar">
+      <div class="nx-section-meta">
+        <div class="nx-meta-icon">
+          <svg class="portal-icon" aria-hidden="true"><use href="#portal-grid"/></svg>
+        </div>
+        <div>
+          <h2 class="nx-section-heading">زیربخش‌های فعال</h2>
+          <span class="nx-section-sub">دسترسی مستقیم به ماژول‌های این بخش</span>
+        </div>
+      </div>
+      <div class="nx-count-chip">
+        <span class="nx-count-num">{{ active_module.models|length }}</span>
+        <span>زیرماژول</span>
+      </div>
+    </div>
+
+    <!-- گرید کارت‌های شیشه‌ای فوق‌العاده تعاملی -->
+    <div class="nx-bento-grid">
+      {% for link in active_module.models %}
+      <a href="{{ link.url }}" class="nx-card-link">
+        <div class="nx-card">
+          <!-- افکت براق لبه‌ها هنگام هاور -->
+          <div class="nx-card-shimmer"></div>
+
+          <div class="nx-card-top">
+            <div class="nx-card-icon-wrapper">
+              <div class="nx-icon-aura"></div>
+              <div class="nx-card-icon">
+                <svg class="portal-icon" aria-hidden="true">
+                  <use href="#portal-{{ link.icon|default:'layers' }}"/>
+                </svg>
+              </div>
+            </div>
+
+            <div class="nx-action-btn">
+              <svg class="portal-icon" aria-hidden="true"><use href="#portal-arrow-left"/></svg>
+            </div>
+          </div>
+
+          <div class="nx-card-content">
+            <h3 class="nx-card-title">{{ link.name }}</h3>
+            <p class="nx-card-desc">
+              {% if link.description %}
+                {{ link.description }}
+              {% else %}
+                پیکربندی، بررسی رکوردها، ویرایش و ثبت داده‌های مرتبط با {{ link.name }}
+              {% endif %}
+            </p>
+          </div>
+
+          <div class="nx-card-footer">
+            <span class="nx-footer-status">
+              <span class="nx-status-dot"></span>
+              مدیریت داده‌ها
+            </span>
+            <span class="nx-link-indicator">ورود سریع</span>
+          </div>
+        </div>
+      </a>
+      {% empty %}
+      <div class="nx-empty-card">
+        <div class="nx-empty-icon">🗂️</div>
+        <h3>هیچ زیربخشی یافت نشد</h3>
+        <p>شما در حال حاضر دسترسی فعالی به این ماژول ندارید.</p>
+      </div>
+      {% endfor %}
+    </div>
+  </main>
+</div>
+
+<!-- استایل‌های فوق مدرن (CSS) -->
+<style>
+  :root {
+    --nx-primary: #059669;
+    --nx-primary-rgb: 5, 150, 105;
+    --nx-accent: #10b981;
+    --nx-emerald-dark: #064e3b;
+    --nx-bg-glass: rgba(255, 255, 255, 0.78);
+    --nx-bg-glass-hover: rgba(255, 255, 255, 0.95);
+    --nx-border-glass: rgba(226, 232, 240, 0.8);
+    --nx-text-primary: #0f172a;
+    --nx-text-secondary: #475569;
+    --nx-text-muted: #94a3b8;
+  }
+
+  .nx-workspace-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 2.2rem;
+    padding: 0.5rem 0 3rem;
+    font-family: inherit;
+    z-index: 1;
+  }
+
+  /* --- Ambient Dynamic Glows --- */
+  .nx-ambient-glow {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: 0.45;
+    pointer-events: none;
+    z-index: -1;
+  }
+  .nx-glow-1 {
+    top: -40px;
+    right: 10%;
+    width: 320px;
+    height: 320px;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.35) 0%, transparent 70%);
+  }
+  .nx-glow-2 {
+    top: 35%;
+    left: 5%;
+    width: 380px;
+    height: 380px;
+    background: radial-gradient(circle, rgba(6, 78, 59, 0.2) 0%, transparent 70%);
+  }
+
+  /* --- Next-Gen Hero Glass --- */
+  .nx-hero-glass {
+    position: relative;
+    border-radius: 28px;
+    background: linear-gradient(135deg, #064e3b 0%, #047857 50%, #065f46 100%);
+    box-shadow: 0 20px 40px -15px rgba(6, 78, 59, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.12) inset;
+    overflow: hidden;
+    padding: 3rem 2.5rem;
+    color: #ffffff;
+  }
+
+  .nx-hero-grid-pattern {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px);
+    background-size: 24px 24px;
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  .nx-hero-inner {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+
+  .nx-pill-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(12px);
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #a7f3d0;
+    margin-bottom: 1rem;
+  }
+
+  .nx-pulse-dot {
+    position: relative;
+    display: flex;
+    width: 8px;
+    height: 8px;
+  }
+  .nx-pulse-dot::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: #34d399;
+  }
+  .nx-pulse-wave {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: #34d399;
+    animation: nx-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+  @keyframes nx-ping {
+    75%, 100% { transform: scale(2.5); opacity: 0; }
+  }
+
+  .nx-title {
+    font-size: 2.3rem;
+    font-weight: 900;
+    margin: 0 0 0.75rem 0;
+    letter-spacing: -0.03em;
+    line-height: 1.25;
+    background: linear-gradient(180deg, #ffffff 0%, #d1fae5 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .nx-subtitle {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.85);
+    max-width: 580px;
+    margin: 0;
+  }
+
+  /* 3D Glass Orb/Cube */
+  .nx-hero-visual {
+    display: none;
+  }
+  @media (min-width: 840px) {
+    .nx-hero-visual {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  .nx-glass-cube {
+    position: relative;
+    width: 105px;
+    height: 105px;
+  }
+  .nx-glass-cube-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 30px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.05) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    backdrop-filter: blur(16px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    transform: perspective(600px) rotateY(-12deg) rotateX(6deg);
+    transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .nx-glass-cube-inner svg {
+    width: 48px;
+    height: 48px;
+    fill: #ffffff;
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.15));
+  }
+  .nx-hero-glass:hover .nx-glass-cube-inner {
+    transform: perspective(600px) rotateY(0deg) rotateX(0deg) scale(1.08);
+  }
+
+  /* --- Section Header & Toolbar --- */
+  .nx-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding: 0 0.35rem;
+  }
+  .nx-section-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .nx-meta-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: #ecfdf5;
+    border: 1px solid #d1fae5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .nx-meta-icon svg {
+    width: 20px;
+    height: 20px;
+    fill: var(--nx-primary);
+  }
+  .nx-section-heading {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--nx-text-primary);
+    margin: 0;
+    line-height: 1.2;
+  }
+  .nx-section-sub {
+    font-size: 0.82rem;
+    color: var(--nx-text-muted);
+  }
+  .nx-count-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 6px 14px;
+    border-radius: 9999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--nx-text-secondary);
+  }
+  .nx-count-num {
+    background: var(--nx-primary);
+    color: #ffffff;
+    padding: 2px 7px;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+  }
+
+  /* --- Bento Grid Layout --- */
+  .nx-bento-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .nx-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    outline: none;
+  }
+
+  /* Card Component */
+  .nx-card {
+    position: relative;
+    background: var(--nx-bg-glass);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--nx-border-glass);
+    border-radius: 24px;
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 200px;
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+  }
+
+  /* Shimmer Hover Border Effect */
+  .nx-card-shimmer {
+    position: absolute;
+    inset: 0;
+    border-radius: 24px;
+    padding: 2px;
+    background: linear-gradient(135deg, transparent 40%, rgba(16, 185, 129, 0.4) 70%, transparent 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+  }
+
+  .nx-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+  }
+
+  .nx-card-icon-wrapper {
+    position: relative;
+  }
+  .nx-icon-aura {
+    position: absolute;
+    inset: -4px;
+    border-radius: 20px;
+    background: rgba(16, 185, 129, 0.15);
+    filter: blur(6px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .nx-card-icon {
+    position: relative;
+    width: 54px;
+    height: 54px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .nx-card-icon svg {
+    width: 26px;
+    height: 26px;
+    fill: var(--nx-primary);
+    transition: transform 0.3s ease, fill 0.3s ease;
+  }
+
+  /* Action Arrow Circle */
+  .nx-action-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+  }
+  .nx-action-btn svg {
+    width: 16px;
+    height: 16px;
+    fill: var(--nx-text-muted);
+    transition: all 0.3s ease;
+  }
+
+  /* Content */
+  .nx-card-title {
+    font-size: 1.18rem;
+    font-weight: 800;
+    color: var(--nx-text-primary);
+    margin: 0 0 0.5rem 0;
+    letter-spacing: -0.01em;
+    line-height: 1.35;
+    transition: color 0.3s ease;
+  }
+
+  .nx-card-desc {
+    font-size: 0.85rem;
+    color: var(--nx-text-secondary);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* Footer */
+  .nx-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #f1f5f9;
+  }
+
+  .nx-footer-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.77rem;
+    color: var(--nx-text-muted);
+    font-weight: 500;
+  }
+  .nx-status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #cbd5e1;
+    transition: background 0.3s ease;
+  }
+
+  .nx-link-indicator {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--nx-primary);
+    opacity: 0;
+    transform: translateX(6px);
+    transition: all 0.3s ease;
+  }
+
+  /* --- Super Interactive Hover States --- */
+  .nx-card-link:hover .nx-card {
+    transform: translateY(-8px);
+    background: var(--nx-bg-glass-hover);
+    box-shadow: 0 25px 45px -12px rgba(5, 150, 105, 0.16), 0 0 0 1px rgba(16, 185, 129, 0.25);
+    border-color: rgba(16, 185, 129, 0.3);
+  }
+
+  .nx-card-link:hover .nx-card-shimmer {
+    opacity: 1;
+  }
+
+  .nx-card-link:hover .nx-icon-aura {
+    opacity: 1;
+  }
+
+  .nx-card-link:hover .nx-card-icon {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    border-color: transparent;
+    transform: scale(1.08) rotate(-4deg);
+    box-shadow: 0 8px 18px rgba(5, 150, 105, 0.3);
+  }
+
+  .nx-card-link:hover .nx-card-icon svg {
+    fill: #ffffff;
+  }
+
+  .nx-card-link:hover .nx-action-btn {
+    background: var(--nx-primary);
+    border-color: var(--nx-primary);
+    transform: scale(1.05);
+  }
+
+  .nx-card-link:hover .nx-action-btn svg {
+    fill: #ffffff;
+    transform: translateX(-3px);
+  }
+
+  .nx-card-link:hover .nx-card-title {
+    color: var(--nx-primary);
+  }
+
+  .nx-card-link:hover .nx-status-dot {
+    background: var(--nx-accent);
+    box-shadow: 0 0 8px var(--nx-accent);
+  }
+
+  .nx-card-link:hover .nx-link-indicator {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* Empty State */
+  .nx-empty-card {
+    grid-column: 1 / -1;
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 3rem;
+    text-align: center;
+    border: 2px dashed #e2e8f0;
+  }
+  .nx-empty-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+</style>
 {% endblock %}

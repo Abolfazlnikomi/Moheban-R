@@ -1,15 +1,111 @@
+/* --- ناوبری و بخش بالای اطلاعیه --- */
+.announcement-detail nav {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.announcement-detail nav a {
+    display: inline-block;
+    padding: 0.4rem 0.9rem;
+    background: #f1f5f9;
+    color: #081f2b;
+    text-decoration: none;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.announcement-detail nav a:hover {
+    background: #081f2b;
+    color: #ffffff;
+}
+
+/* --- بدنه اصلی کارت اطلاعیه --- */
+.announcement-detail article {
+    background: #ffffff;
+    border-radius: 1rem;
+    padding: 2rem;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 15px rgba(8, 31, 43, 0.05);
+}
+
+.announcement-detail h1 {
+    color: #081f2b;
+    font-size: 1.75rem;
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+}
+
+/* --- تاریخ و زمان انتشار --- */
+.announcement-detail time {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: #64748b;
+    background: #f8fafc;
+    padding: 0.2rem 0.6rem;
+    border-radius: 0.35rem;
+    border: 1px solid #edf2f7;
+    margin-bottom: 1.5rem;
+}
+
+/* --- خلاصه اطلاعیه --- */
+.announcement-summary {
+    background: #f0f7f4;
+    border-right: 4px solid #10b981;
+    padding: 1rem 1.25rem;
+    border-radius: 0.5rem;
+    color: #064e3b;
+    font-size: 1.05rem;
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+}
+
+/* --- متن اصلی اطلاعیه --- */
+.announcement-body {
+    color: #334155;
+    font-size: 1.05rem;
+    line-height: 1.9;
+    margin-bottom: 2rem;
+}
+
+.announcement-body p {
+    margin-bottom: 1rem;
+}
+
+/* --- گالری تصاویر پیوست --- */
 .announcement-gallery {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
-    gap: .75rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px dashed #cbd5e1;
 }
-.announcement-gallery a { display: block; }
+
+.announcement-gallery a {
+    display: block;
+    overflow: hidden;
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.announcement-gallery a:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+}
+
 .announcement-gallery img {
     display: block;
     width: 100%;
     aspect-ratio: 4 / 3;
-    object-fit: contain;
-    background: #e8efeb;
-    border: 1px solid #d8e4dc;
-    border-radius: .9rem;
+    object-fit: cover;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
 }

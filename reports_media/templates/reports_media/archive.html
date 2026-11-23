@@ -1,39 +1,378 @@
-{% extends "reports_media/shell.html" %}
-{% block title %}گزارش‌ها و آرشیو رسانه{% endblock %}
-{% block reports %}
-<header class="hero">
-  <h1>گزارش‌ها و آرشیو رسانه</h1>
-  <p>گزارش مراسم‌ها، گالری تصاویر و آرشیو صوتی و تصویری هیئت‌ها</p>
-</header>
-<form method="get" class="filters" aria-label="فیلترهای آرشیو">
-  {% include "dorm_heiat/unit_select.html" %}
-  <div class="filter-grid">
-  {% for field in form %}
-    <div>{{ field.label_tag }}{{ field }}{{ field.errors }}</div>
-  {% endfor %}
-  </div>
-  <div class="actions"><button type="submit">جست‌وجو و اعمال فیلتر</button><a href="{% url 'reports_media:archive' %}">پاک کردن فیلترها</a></div>
-</form>
-<section aria-label="نتایج آرشیو" class="cards">
-{% for post in page %}
-  <article class="card">
-    {% if post.cover %}<img class="card-cover" src="{% url 'reports_media:cover' post.pk %}" alt="" loading="lazy">{% endif %}
-    <div class="card-body">
-      {% if post.status == 'archived' %}<span class="badge">بایگانی‌شده</span>{% endif %}
-      <h2><a href="{{ post.get_absolute_url }}{{ scope.query }}">{{ post.title }}</a></h2>
-      <p>{{ post.summary }}</p>
-      {% include "reports_media/meta.html" %}
-    </div>
-  </article>
-{% empty %}
-  <p class="empty">محتوایی مطابق این معیارها پیدا نشد.</p>
-{% endfor %}
-</section>
-{% if page.has_other_pages %}
-<nav class="pages" aria-label="صفحه‌بندی آرشیو">
-  {% if page.has_previous %}<a href="?{% if params %}{{ params }}&amp;{% endif %}page={{ page.previous_page_number }}" rel="prev">صفحهٔ قبل</a>{% endif %}
-  <span>صفحهٔ {{ page.number }} از {{ page.paginator.num_pages }}</span>
-  {% if page.has_next %}<a href="?{% if params %}{{ params }}&amp;{% endif %}page={{ page.next_page_number }}" rel="next">صفحهٔ بعد</a>{% endif %}
-</nav>
-{% endif %}
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+:root {
+  --rm-primary: #0e3b2f;
+  --rm-primary-light: #165b49;
+  --rm-primary-subtle: #e8f5e9;
+  --rm-accent: #d97706;
+  --rm-accent-hover: #b45309;
+  --rm-bg-main: #f8faf9;
+  --rm-surface: #ffffff;
+  --rm-border: #e2e8f0;
+  --rm-text-main: #1e293b;
+  --rm-text-muted: #64748b;
+  --rm-radius-sm: 8px;
+  --rm-radius-md: 14px;
+  --rm-radius-lg: 20px;
+  --rm-radius-full: 9999px;
+  --rm-shadow-sm: 0 2px 4px rgba(14, 59, 47, 0.04);
+  --rm-shadow-md: 0 10px 25px -5px rgba(14, 59, 47, 0.07);
+  --rm-shadow-lg: 0 20px 35px -10px rgba(14, 59, 47, 0.12);
+  --rm-transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.reports-container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 5rem;
+  direction: rtl;
+  color: var(--rm-text-main);
+}
+
+/* هدر مدرن */
+.reports-hero {
+  position: relative;
+  background: linear-gradient(135deg, var(--rm-primary) 0%, #061c16 100%);
+  color: #fff;
+  border-radius: var(--rm-radius-lg);
+  padding: 3.5rem 2rem;
+  text-align: center;
+  margin-bottom: 2.5rem;
+  box-shadow: var(--rm-shadow-lg);
+  overflow: hidden;
+}
+
+.reports-hero h1 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin: 0 0 0.75rem;
+}
+
+.reports-hero p {
+  font-size: 1.05rem;
+  color: #d1fae5;
+  margin: 0;
+  opacity: 0.9;
+}
+
+/* باکس فیلترها */
+.reports-filters {
+  background: var(--rm-surface);
+  border: 1px solid var(--rm-border);
+  border-radius: var(--rm-radius-lg);
+  padding: 1.75rem;
+  margin-bottom: 3rem;
+  box-shadow: var(--rm-shadow-md);
+}
+
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.25rem;
+}
+
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.filter-field label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--rm-text-main);
+}
+
+.filter-field input,
+.filter-field select {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--rm-radius-sm);
+  border: 1px solid var(--rm-border);
+  background-color: var(--rm-bg-main);
+  color: var(--rm-text-main);
+  font-size: 0.9rem;
+  outline: none;
+  transition: var(--rm-transition);
+}
+
+.filter-field input:focus,
+.filter-field select:focus {
+  border-color: var(--rm-accent);
+  background-color: #fff;
+  box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.15);
+}
+
+.filter-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.btn-filter-submit {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--rm-accent);
+  color: #fff;
+  padding: 0.65rem 1.5rem;
+  border-radius: var(--rm-radius-sm);
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: var(--rm-transition);
+}
+
+.btn-filter-submit:hover {
+  background: var(--rm-accent-hover);
+  transform: translateY(-2px);
+}
+
+.btn-filter-reset {
+  color: var(--rm-text-muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+
+.btn-filter-reset:hover {
+  color: #ef4444;
+}
+
+/* شبکه کارت‌ها */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+}
+
+.report-card {
+  background: var(--rm-surface);
+  border-radius: var(--rm-radius-md);
+  border: 1px solid var(--rm-border);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: var(--rm-transition);
+  box-shadow: var(--rm-shadow-sm);
+}
+
+.report-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--rm-shadow-lg);
+  border-color: #cbd5e1;
+}
+
+.card-media {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%;
+  background: #0f172a;
+}
+
+.card-cover {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.report-card:hover .card-cover {
+  transform: scale(1.05);
+}
+
+.card-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.card-title {
+  margin: 0 0 0.75rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.card-title a {
+  color: var(--rm-text-main);
+  text-decoration: none;
+  transition: var(--rm-transition);
+}
+
+.card-title a:hover {
+  color: var(--rm-accent);
+}
+
+.card-summary {
+  color: var(--rm-text-muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin-bottom: 1.25rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex-grow: 1;
+}
+
+.meta-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #f1f5f9;
+  font-size: 0.8rem;
+}
+
+.meta-chip {
+  background: var(--rm-bg-main);
+  color: var(--rm-text-muted);
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--rm-radius-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.meta-chip.category {
+  background: var(--rm-primary-subtle);
+  color: var(--rm-primary);
+  font-weight: 600;
+}
+
+/* صفحه‌بندی */
+.pagination-wrapper {
+  margin-top: 3.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.page-btn {
+  padding: 0.6rem 1.25rem;
+  background: var(--rm-surface);
+  border: 1px solid var(--rm-border);
+  border-radius: var(--rm-radius-sm);
+  color: var(--rm-text-main);
+  text-decoration: none;
+  font-weight: 600;
+  transition: var(--rm-transition);
+}
+
+.page-btn:hover {
+  border-color: var(--rm-accent);
+  color: var(--rm-accent);
+}
+
+.page-indicator {
+  font-size: 0.9rem;
+  color: var(--rm-text-muted);
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 4rem 1rem;
+  background: var(--rm-surface);
+  border: 2px dashed var(--rm-border);
+  border-radius: var(--rm-radius-md);
+  color: var(--rm-text-muted);
+}
+</style>
+
+<div class="reports-container">
+  <header class="reports-hero">
+    <h1>گزارش‌ها و رسانه‌ها</h1>
+    <p>آرشیو رویدادها، فایل‌های چندرسانه‌ای و اطلاعیه‌ها</p>
+  </header>
+
+  <!-- فرم فیلتر -->
+  <section class="reports-filters">
+    <form method="get">
+      <div class="filter-grid">
+        {% for field in form %}
+          <div class="filter-field">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="filter-actions">
+        {% if params %}
+          <a href="?" class="btn-filter-reset">پاک‌کردن فیلترها</a>
+        {% endif %}
+        <button type="submit" class="btn-filter-submit">
+          اعمال فیلتر
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <!-- لیست پست‌ها -->
+  <main class="cards-grid">
+    {% for post in page.object_list %}
+      <article class="report-card">
+        {% if post.cover %}
+          <div class="card-media">
+            <img src="{% url 'reports_media:cover' post.pk %}" alt="{{ post.title }}" class="card-cover" loading="lazy">
+          </div>
+        {% endif %}
+
+        <div class="card-body">
+          <h2 class="card-title">
+            <a href="{% url 'reports_media:detail' post.pk %}">{{ post.title }}</a>
+          </h2>
+
+          {% if post.summary %}
+            <p class="card-summary">{{ post.summary }}</p>
+          {% endif %}
+
+          <div class="meta-chips">
+            {% if post.category %}
+              <span class="meta-chip category">{{ post.category.name }}</span>
+            {% endif %}
+            {% if post.event_date %}
+              <span class="meta-chip">
+                {{ post.event_date|date:"Y/m/d" }}
+              </span>
+            {% endif %}
+            <span class="meta-chip">
+              بازدید: {{ post.views }}
+            </span>
+          </div>
+        </div>
+      </article>
+    {% empty %}
+      <div class="empty-state">
+        <p>هیچ موردی مطابق با فیلترهای انتخابی یافت نشد.</p>
+      </div>
+    {% endfor %}
+  </main>
+
+  <!-- صفحه‌بندی -->
+  {% if page.has_other_pages %}
+    <nav class="pagination-wrapper">
+      {% if page.has_previous %}
+        <a href="?page={{ page.previous_page_number }}{% if params %}&{{ params }}{% endif %}" class="page-btn">صفحه قبل</a>
+      {% endif %}
+
+      <span class="page-indicator">صفحه {{ page.number }} از {{ page.paginator.num_pages }}</span>
+
+      {% if page.has_next %}
+        <a href="?page={{ page.next_page_number }}{% if params %}&{{ params }}{% endif %}" class="page-btn">صفحه بعد</a>
+      {% endif %}
+    </nav>
+  {% endif %}
+</div>
 {% endblock %}

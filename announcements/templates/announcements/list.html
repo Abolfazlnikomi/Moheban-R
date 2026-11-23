@@ -1,29 +1,147 @@
 {% extends "base.html" %}
-{% block title %}{% if archived %}آرشیو اطلاعیه‌ها{% else %}اطلاعیه‌ها{% endif %} | محبان{% endblock %}
+{% load static %}
+
+{% block title %}
+  {% if archived %}آرشیو اطلاعیه‌ها{% else %}اطلاعیه‌ها{% endif %} | محبان
+{% endblock %}
+
+{% block extra_css %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'announcements/list.css' %}">
+{% endblock %}
+
 {% block content %}
-<div class="account-panel unit-page">
-  <h1>{% if archived %}آرشیو اطلاعیه‌ها{% else %}آخرین اطلاعیه‌ها{% endif %}</h1>
-  {% if archived %}
-    <a href="{% url 'announcements:list' %}{{ scope.query }}">آخرین اطلاعیه‌ها</a>
-  {% else %}
-    <a href="{% url 'announcements:archive' %}{{ scope.query }}">مشاهدهٔ آرشیو اطلاعیه‌ها</a>
-  {% endif %}
-  {% include "dorm_heiat/filter_form.html" %}
-  {% for item in page %}
-    <article>
-      <h2><a href="{{ item.get_absolute_url }}{{ scope.query }}">{{ item.title }}</a></h2>
-      <time datetime="{{ item.published_at|date:'c' }}">{{ item.published_at|date:"Y/m/d، H:i" }}</time>
-      {% if item.summary %}<p>{{ item.summary }}</p>{% endif %}
-    </article>
-  {% empty %}
-    <p>اطلاعیه‌ای برای نمایش پیدا نشد.</p>
-  {% endfor %}
+<div class="account-panel unit-page announcement-page">
+
+  <header class="announcement-hero">
+    <div class="announcement-hero__content">
+      <span class="announcement-hero__eyebrow">تابلوی اطلاع‌رسانی محبان</span>
+
+      <h1>
+        {% if archived %}
+          آرشیو اطلاعیه‌ها
+        {% else %}
+          آخرین اطلاعیه‌ها
+        {% endif %}
+      </h1>
+
+      <p>
+        {% if archived %}
+          اطلاعیه‌های پیشین را مرور کنید و از برنامه‌ها و خبرهای گذشته باخبر شوید.
+        {% else %}
+          خبرها، برنامه‌ها و اطلاعیه‌های تازه را اینجا دنبال کنید.
+        {% endif %}
+      </p>
+    </div>
+
+    <nav class="announcement-hero__nav" aria-label="بخش‌های اطلاعیه‌ها">
+      <a
+        class="{% if not archived %}is-active{% endif %}"
+        href="{% url 'announcements:list' %}{{ scope.query }}"
+        {% if not archived %}aria-current="page"{% endif %}
+      >اطلاعیه‌های تازه</a>
+
+      <a
+        class="{% if archived %}is-active{% endif %}"
+        href="{% url 'announcements:archive' %}{{ scope.query }}"
+        {% if archived %}aria-current="page"{% endif %}
+      >آرشیو</a>
+    </nav>
+  </header>
+
+  <div class="announcement-filter">
+    <div class="announcement-filter__heading">
+      <span>فیلتر اطلاعیه‌ها</span>
+      <small>نمایش بر اساس واحد مرتبط</small>
+    </div>
+    {% include "dorm_heiat/filter_form.html" %}
+  </div>
+
+  <div class="announcement-section-heading">
+    <div>
+      <span class="announcement-section-heading__line"></span>
+      <h2>{% if archived %}اطلاعیه‌های آرشیوشده{% else %}تازه‌ترین خبرها{% endif %}</h2>
+    </div>
+    <span class="announcement-section-heading__count">
+      {{ page.paginator.count }} اطلاعیه
+    </span>
+  </div>
+
+  <section class="announcement-grid"
+           aria-label="{% if archived %}اطلاعیه‌های آرشیوشده{% else %}آخرین اطلاعیه‌ها{% endif %}">
+    {% for item in page %}
+      <article class="announcement-card">
+        <a class="announcement-card__media"
+           href="{{ item.get_absolute_url }}{{ scope.query }}"
+           aria-label="مشاهدهٔ اطلاعیهٔ {{ item.title }}">
+          {% if item.cover %}
+            <img
+              src="{% url 'announcements:cover' item.pk %}"
+              alt="عکس شاخص {{ item.title }}"
+              loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+              decoding="async"
+            >
+          {% else %}
+            <span class="announcement-card__placeholder" aria-hidden="true">
+              <span>محبان</span>
+            </span>
+          {% endif %}
+          <span class="announcement-card__badge">
+            {% if archived %}آرشیو{% else %}اطلاعیه{% endif %}
+          </span>
+        </a>
+
+        <div class="announcement-card__content">
+          {% if item.published_at %}
+            <time class="announcement-card__date"
+                  datetime="{{ item.published_at|date:'c' }}">
+              {{ item.published_at|date:"Y/m/d، H:i" }}
+            </time>
+          {% endif %}
+
+          <h3>
+            <a href="{{ item.get_absolute_url }}{{ scope.query }}">
+              {{ item.title }}
+            </a>
+          </h3>
+
+          {% if item.summary %}
+            <p class="announcement-card__summary">{{ item.summary }}</p>
+          {% endif %}
+
+          <div class="announcement-card__footer">
+            <a href="{{ item.get_absolute_url }}{{ scope.query }}">
+              مشاهدهٔ اطلاعیه <span aria-hidden="true">←</span>
+            </a>
+
+            {% if archived and item.expires_at %}
+              <span class="announcement-card__expiry">
+                تا {{ item.expires_at|date:"Y/m/d" }}
+              </span>
+            {% endif %}
+          </div>
+        </div>
+      </article>
+    {% empty %}
+      <div class="announcement-empty">
+        <span class="announcement-empty__mark" aria-hidden="true">!</span>
+        <h3>اطلاعیه‌ای پیدا نشد</h3>
+        <p>برای این فیلتر موردی وجود ندارد؛ واحد دیگری را انتخاب کنید.</p>
+      </div>
+    {% endfor %}
+  </section>
+
   {% if page.has_other_pages %}
-    <nav aria-label="صفحه‌بندی">
-      {% if page.has_previous %}<a href="{% querystring page=page.previous_page_number %}">صفحهٔ قبل</a>{% endif %}
-      <span>{{ page.number }} از {{ page.paginator.num_pages }}</span>
-      {% if page.has_next %}<a href="{% querystring page=page.next_page_number %}">صفحهٔ بعد</a>{% endif %}
+    <nav class="announcement-pagination" aria-label="صفحه‌بندی اطلاعیه‌ها">
+      {% if page.has_previous %}
+        <a href="{% querystring page=page.previous_page_number %}">صفحهٔ قبل</a>
+      {% endif %}
+      <span aria-current="page">{{ page.number }} / {{ page.paginator.num_pages }}</span>
+      {% if page.has_next %}
+        <a href="{% querystring page=page.next_page_number %}">صفحهٔ بعد</a>
+      {% endif %}
     </nav>
   {% endif %}
+
 </div>
 {% endblock %}

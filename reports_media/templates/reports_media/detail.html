@@ -1,36 +1,195 @@
-{% extends "reports_media/shell.html" %}
-{% block title %}{{ post.title }} | آرشیو رسانه{% endblock %}
-{% block reports %}
-<a class="back" href="{% url 'reports_media:archive' %}{{ scope.query }}">بازگشت به آرشیو</a>
-<article class="detail">
-  <header class="hero">
-    {% if post.status == 'archived' %}<span class="badge">بایگانی‌شده</span>{% endif %}
-    <h1>{{ post.title }}</h1>
-    <p>{{ post.summary }}</p>
-    {% include "reports_media/meta.html" %}
-  </header>
-  {% if post.cover %}<img class="detail-cover" src="{% url 'reports_media:cover' post.pk %}" alt="تصویر شاخص {{ post.title }}">{% endif %}
-  <div class="prose">{{ post.description|linebreaks }}</div>
-  <p><strong>مسئول محتوا:</strong> {{ post.responsible }}</p>
-  {% if post.tags.all %}
-  <ul class="tags" aria-label="برچسب‌ها">
-    {% for tag in post.tags.all %}<li><a href="{% url 'reports_media:archive' %}?q={{ tag.name|urlencode }}{% if scope.selected %}&amp;unit={{ scope.selected }}{% endif %}">{{ tag.name }}</a></li>{% endfor %}
-  </ul>
-  {% endif %}
-  {% if items %}
-  <section aria-labelledby="media-title">
-    <h2 id="media-title">رسانه‌های مرتبط</h2>
-    <div class="gallery">
-      {% for item in items %}
-        {% if item.attachment.file %}
-          {% url 'reports_media:file' item.attachment.pk as local_url %}
-          {% include "reports_media/player.html" with source=item.online_url|default:local_url local_url=local_url %}
-        {% else %}
-          {% include "reports_media/player.html" with source=item.online_url local_url="" %}
-        {% endif %}
-      {% endfor %}
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+.detail-container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 6rem;
+  direction: rtl;
+  font-family: inherit;
+  color: #1e293b;
+}
+
+.detail-header {
+  margin-bottom: 2rem;
+}
+
+.detail-meta-top {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.badge-kind {
+  background: #0e3b2f;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.3rem 0.75rem;
+  border-radius: 6px;
+}
+
+.badge-cat {
+  background: #ecfdf5;
+  color: #0e3b2f;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.3rem 0.75rem;
+  border-radius: 6px;
+}
+
+.detail-title {
+  font-size: 2rem;
+  font-weight: 900;
+  line-height: 1.5;
+  color: #0f172a;
+  margin: 0 0 1.25rem;
+}
+
+.detail-meta-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  padding: 1rem 0;
+  border-top: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.detail-cover {
+  width: 100%;
+  max-height: 480px;
+  object-fit: cover;
+  border-radius: 16px;
+  margin: 2rem 0;
+  box-shadow: 0 10px 25px -5px rgba(0,0,0,0.08);
+}
+
+.detail-summary {
+  background: #f8fafc;
+  border-right: 4px solid #d97706;
+  padding: 1.25rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: #334155;
+  margin-bottom: 2rem;
+}
+
+.detail-body {
+  font-size: 1.05rem;
+  line-height: 2;
+  color: #1e293b;
+}
+
+/* استایل دهی به تگ‌های خروجی CKEditor */
+.detail-body p { margin-bottom: 1.25rem; }
+.detail-body img { max-width: 100%; height: auto; border-radius: 12px; margin: 1.5rem 0; }
+.detail-body blockquote { border-right: 4px solid #0e3b2f; padding-right: 1rem; color: #475569; font-style: italic; }
+
+/* بخش پیوست‌ها و فایل‌های ضمیمه */
+.attachments-card {
+  margin-top: 3.5rem;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 1.75rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+}
+
+.attachments-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  margin: 0 0 1.25rem;
+  color: #0e3b2f;
+}
+
+.attachment-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1rem;
+  background: #f8fafc;
+  border-radius: 10px;
+  margin-bottom: 0.75rem;
+}
+
+.btn-download {
+  background: #0e3b2f;
+  color: #fff;
+  padding: 0.45rem 1rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+</style>
+
+<div class="detail-container">
+
+  <header class="detail-header">
+    <div class="detail-meta-top">
+      {% if post.get_kind_display %}
+        <span class="badge-kind">{{ post.get_kind_display }}</span>
+      {% endif %}
+      {% if post.category %}
+        <span class="badge-cat">{{ post.category.name }}</span>
+      {% endif %}
     </div>
-  </section>
+
+    <h1 class="detail-title">{{ post.title }}</h1>
+
+    <div class="detail-meta-bar">
+      {% if post.event_date %}
+        <span>📅 تاریخ مراسم: {{ post.event_date|date:"Y/m/d" }}</span>
+      {% endif %}
+      <span>🕒 انتشار: {{ post.published_at|date:"Y/m/d H:i" }}</span>
+      <span>👁 {{ post.views }} بازدید</span>
+    </div>
+  </header>
+
+  {% if post.cover %}
+    <img src="{% url 'reports_media:cover' post.pk %}" alt="{{ post.title }}" class="detail-cover">
   {% endif %}
-</article>
+
+  {% if post.summary %}
+    <div class="detail-summary">
+      {{ post.summary }}
+    </div>
+  {% endif %}
+
+  <!-- محتوای کامل CKEditor -->
+  <article class="detail-body">
+    {{ post.description|safe }}
+  </article>
+
+  <!-- لیست فایل‌ها و پیوست‌ها -->
+  {% if items %}
+    <section class="attachments-card">
+      <h3 class="attachments-title">📎 فایل‌های ضمیمه و چندرسانه‌ای</h3>
+      <div>
+        {% for item in items %}
+          <div class="attachment-item">
+            <div>
+              <strong>{{ item.attachment.title|default:"فایل پیوست" }}</strong>
+              <span style="font-size: 0.75rem; color: #64748b; margin-right: 0.5rem;">({{ item.kind }})</span>
+            </div>
+            <div>
+              {% if item.file_url %}
+                <a href="{{ item.file_url }}?download" class="btn-download">دانلود فایل</a>
+              {% elif item.online_url %}
+                <a href="{{ item.online_url }}" target="_blank" class="btn-download">مشاهده آنلاین</a>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+</div>
 {% endblock %}
