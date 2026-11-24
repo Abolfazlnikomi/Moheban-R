@@ -86,6 +86,10 @@
                {% if request.resolver_match.view_name == 'registrations_campaigns:campaigns' %}aria-current="page"{% endif %}>
                 پویش‌ها
             </a>
+            <a href="{% url 'live:live_page' %}"
+                {% if request.resolver_match.view_name == 'live:live_page' %}aria-current="page"{% endif %}>
+                 پخش زنده
+            </a>
 
             {% if menu_scope.options %}
             <details class="site-menu">

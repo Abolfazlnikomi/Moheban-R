@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'experience_writing',
     'feedback_polls',
     'site_info',
+    'live',
 ]
 
 MIDDLEWARE = [
