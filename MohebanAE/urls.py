@@ -34,6 +34,7 @@ urlpatterns = [
     path('night-gatherings/', include('night_gatherings.urls')),
     path('', include('registrations_campaigns.urls')),
     path('live/', include('live.urls')),
+    path('donations/', include('donations.urls')),
 ]
 
 # سرو فایل‌های مدیا و استاتیک در حالت DEBUG

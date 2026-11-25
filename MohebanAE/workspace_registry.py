@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.contrib.auth.models import Group, User
 from django.db.models import Q
 from django.urls import reverse
-
+from live.models import LiveStream
 from announcements.models import Announcement
 from announcements.forms import AnnouncementForm
 from dorm_heiat.admin import UnitContentForm
@@ -125,6 +125,12 @@ RESOURCES = (
              parent=GatheringReport, parent_field='report'),
     Resource(CampaignField, ('label', 'kind', 'required', 'options', 'order'), ('kind', 'required', 'order'),
              parent=Campaign, parent_field='campaign'),
+    Resource(
+    LiveStream,
+    fields=('title', 'description', 'embed_url', 'is_active'),
+    columns=('title', 'is_active', 'updated_at'),
+    search=('title', 'description'),
+),
 )
 BY_MODEL = {resource.model: resource for resource in RESOURCES}
 VOLUNTEER_MODELS = (VolunteerSettings, VolunteerSection, VolunteerApplication)
@@ -139,6 +145,7 @@ MODULES = {
     'auth': ('کاربران و دسترسی‌ها', 'lock'),
     'feedback_polls': ('نظرات و نظرسنجی', 'heart'),
     'site_info': ('فوتر سایت', 'layers'),
+    'live': ('پخش زنده', 'radio'),
 }
 
 
@@ -163,12 +170,23 @@ def workspace_modules(request):
                 'url': reverse('staff_panel:section', args=[group]),
             }
         module = modules[group]
-        module['models'].append({
-            'name': resource.title,
-            'url': list_url or add_url,
-            'action': 'مشاهدهٔ فهرست' if list_url else 'افزودن مورد جدید',
-            'icon': 'grid' if list_url else 'plus',
-        })
+        if resource.model is LiveStream:
+            module['url'] = reverse('staff_panel:live_management')
+
+            module['models'].append({
+                'name': resource.title,
+                'url': reverse('staff_panel:live_management'),
+                'action': 'مدیریت پخش زنده',
+                'icon': 'radio',
+            })
+
+        else:
+            module['models'].append({
+                'name': resource.title,
+                'url': list_url or add_url,
+                'action': 'مشاهدهٔ فهرست' if list_url else 'افزودن مورد جدید',
+                'icon': 'grid' if list_url else 'plus',
+            })
     return list(modules.values())
 
 

@@ -3,7 +3,11 @@
 
 {% block title %}هیئت محبان اهل‌بیت علیهم‌السلام{% endblock %}
 {% block body_class %}landing-page{% endblock %}
-{% block extra_css %}<link rel="stylesheet" href="{% static 'site/landing.css' %}">{% endblock %}
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'site/landing.css' %}">
+<link rel="stylesheet" href="{% static 'site/donation.css' %}">
+{% endblock %}
 
 {% block content %}
 <div class="landing" dir="rtl">
@@ -44,7 +48,7 @@
             </a>
         </div>
     </section>
-
+    {% include "donations/partials/donation_home_card.html" %}
     <div class="landing-updates">
         <section class="landing-wrap landing-section" id="content" aria-labelledby="content-title">
             <div class="landing-section-heading">

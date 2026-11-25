@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.urls import path
 from django.views.generic import RedirectView
-
+from live import views as live_views
 from registrations_campaigns.models import Campaign, VolunteerApplication
 
 from . import workspace_views as views
@@ -13,6 +13,7 @@ urlpatterns = [
     path('', RedirectView.as_view(pattern_name='account')),
     path('login/', RedirectView.as_view(pattern_name='login'), name='login'),
     path('sections/<slug:section_key>/', views.section, name='section'),
+    path('live/',live_views.live_management,name='live_management'),
 ]
 
 for resource in RESOURCES:

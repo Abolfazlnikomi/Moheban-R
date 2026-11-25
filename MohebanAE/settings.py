@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'feedback_polls',
     'site_info',
     'live',
+    'donations',
 ]
 
 MIDDLEWARE = [
