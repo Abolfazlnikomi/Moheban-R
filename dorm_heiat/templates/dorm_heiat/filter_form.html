@@ -1,5 +1,0 @@
-<form method="get" class="unit-filter"{% if filter_action %} action="{{ filter_action }}"{% endif %}>
-  {% include "dorm_heiat/unit_select.html" %}
-  <button type="submit">اعمال فیلتر</button>
-  {% if scope.selected %}<a href="{{ request.path }}{{ filter_action|default:'' }}">نمایش همه</a>{% endif %}
-</form>

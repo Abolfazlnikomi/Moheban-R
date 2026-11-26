@@ -1,0 +1,85 @@
+
+{% extends "site_ui/base.html" %}
+{% load static %}
+
+{% block title %}پخش زنده | محبان{% endblock %}
+
+{% block body_class %} live-page-body{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'live/live.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="live-page">
+
+    <div class="live-container">
+
+        <div class="live-heading">
+            <span class="live-heading-label">رسانه محبان</span>
+            <h1>پخش زنده</h1>
+            <p>همراه ما باشید و برنامه‌های هیئت را به صورت زنده مشاهده کنید.</p>
+        </div>
+
+        {% if live_stream %}
+
+            <div class="live-card">
+
+                <div class="live-card-header">
+
+                    <div class="live-status">
+                        <span class="live-dot"></span>
+                        <span>در حال پخش زنده</span>
+                    </div>
+
+                    <h2>{{ live_stream.title }}</h2>
+
+                    {% if live_stream.description %}
+                        <p class="live-description">
+                            {{ live_stream.description }}
+                        </p>
+                    {% endif %}
+
+                </div>
+
+                <div class="live-video-wrapper">
+
+                    <iframe
+                        src="{{ live_stream.embed_url }}"
+                        title="پخش زنده محبان"
+                        allow="autoplay; fullscreen; picture-in-picture"
+                        allowfullscreen
+                        loading="eager">
+                    </iframe>
+
+                </div>
+
+                <div class="live-card-footer">
+                    <span>پخش زنده از طریق آپارات</span>
+                </div>
+
+            </div>
+
+        {% else %}
+
+            <div class="live-empty">
+
+                <div class="live-empty-icon">📺</div>
+
+                <h2>در حال حاضر پخش زنده‌ای وجود ندارد</h2>
+
+                <p>
+                    در حال حاضر برنامه‌ای برای پخش زنده نداریم.
+                    لطفاً در زمان دیگری مراجعه کنید.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+{% endblock %}

@@ -39,10 +39,10 @@ class UnitTests(TestCase):
 
     def test_landing_uses_local_assets_and_submits_the_selected_unit(self):
         response = self.client.get('/', {'unit': self.child.pk})
-        for asset in ('site/fonts.css', 'site/landing.css', 'site/courtyard-hero.webp'):
+        for asset in ('site_ui/fonts.css', 'home_page/landing.css', 'home_page/courtyard-hero.webp'):
             self.assertContains(response, static(asset))
             self.assertIsNotNone(finders.find(asset))
-        self.assertIsNotNone(finders.find('site/Vazirmatn.woff2'))
+        self.assertIsNotNone(finders.find('site_ui/Vazirmatn.woff2'))
         self.assertContains(response, 'action="#content"')
         self.assertContains(response, f'<option value="{self.child.pk}" selected>')
         self.assertContains(response, f'href="/volunteer/?unit={self.child.pk}"')

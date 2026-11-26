@@ -1,0 +1,168 @@
+{% extends "site_ui/base.html" %}
+{% load static %}
+
+{% block title %}هیئت محبان اهل‌بیت علیهم‌السلام{% endblock %}
+{% block body_class %}landing-page{% endblock %}
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'home_page/landing.css' %}">
+<link rel="stylesheet" href="{% static 'home_page/donation-card.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="landing" dir="rtl">
+    <section class="landing-hero" id="top" aria-labelledby="hero-title">
+        <img
+            class="landing-hero-photo"
+            src="{% static 'home_page/courtyard-hero.webp' %}"
+            width="1536"
+            height="1024"
+            fetchpriority="high"
+            alt="نمایی از صحن و فضای معنوی هیئت محبان اهل‌بیت علیهم‌السلام"
+        >
+        <div class="landing-hero-scrim" aria-hidden="true"></div>
+        <div class="landing-wrap landing-hero-inner">
+            <p class="landing-kicker landing-hero-kicker">به نام خداوند بخشندهٔ مهربان</p>
+            <h1 id="hero-title">هیئت محبان <span>اهل‌بیت</span> <small>علیهم‌السلام</small></h1>
+            <p class="landing-hero-lead">جایی برای با هم بودن؛ در مجلس اهل‌بیت، در معرفت و در خدمت.</p>
+            <div class="landing-actions">
+                <a class="landing-button landing-button-primary" href="#about">
+                    آشنایی با محبان <span aria-hidden="true">↓</span>
+                </a>
+                <a class="landing-button landing-button-glass" href="{% url 'night_gatherings:list' %}{{ scope.query }}">
+                    برنامهٔ جلسات <span aria-hidden="true">←</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="landing-wrap landing-about landing-reveal" id="about" aria-labelledby="about-title">
+        <div class="landing-about-header">
+            <p class="landing-kicker">معرفی سایت</p>
+            <h2 id="about-title">محبان در یک نگاه</h2>
+        </div>
+        <div class="landing-about-copy">
+            <p>این سایت خانهٔ آنلاین هیئت محبان اهل‌بیت است. اینجا می‌توانید زمان و مکان جلسات را پیدا کنید، گزارش مراسم و نشریات هیئت را ببینید و برای خادمی یا شرکت در پویش‌ها قدم اول را بردارید.</p>
+            <a class="landing-link" href="#content">
+                دیدن بخش‌های سایت <span aria-hidden="true">↓</span>
+            </a>
+        </div>
+    </section>
+    {% include "home_page/donation_card.html" %}
+    <div class="landing-updates">
+        <section class="landing-wrap landing-section" id="content" aria-labelledby="content-title">
+            <div class="landing-section-heading">
+                <div>
+                    <p class="landing-kicker">اخبار و فعالیت‌ها</p>
+                    <h2 id="content-title">تازه‌های محبان</h2>
+                </div>
+                {% include "site_ui/filter_form.html" with filter_action="#content" %}
+            </div>
+
+            <div class="landing-grid">
+                {% for label, route, items in sections %}
+                    {% url route as archive_url %}
+                    <article class="landing-card landing-reveal">
+                        <div class="landing-card-top">
+                            <span class="landing-icon-badge" aria-hidden="true">
+                                <svg class="landing-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round">
+                                    {% if route == 'announcements:list' %}
+                                        <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/>
+                                    {% elif route == 'reports_media:archive' %}
+                                        <rect x="3" y="5" width="18" height="14" rx="2"/><path d="m10 9 5 3-5 3z"/>
+                                    {% elif route == 'publications:list' %}
+                                        <path d="M12 6c-3-2-6-2-9-1v14c3-1 6-1 9 1 3-2 6-2 9-1V5c-3-1-6-1-9 1v14"/>
+                                    {% else %}
+                                        <path d="M20 5a4.5 4.5 0 0 0-6.4 0L12 6.6 10.4 5A4.5 4.5 0 0 0 4 11.4l8 8 8-8A4.5 4.5 0 0 0 20 5Z"/>
+                                    {% endif %}
+                                </svg>
+                            </span>
+                        </div>
+                        <h3 class="landing-card-title">{{ label }}</h3>
+                        {% if items %}
+                            <ul class="landing-list">
+                                {% for item in items %}
+                                    <li class="landing-list-item">
+                                        <a href="{{ item.get_absolute_url }}{{ scope.query }}">{{ item.title }}</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p class="landing-empty">هنوز محتوایی در این بخش منتشر نشده است.</p>
+                        {% endif %}
+                        <a class="landing-link landing-card-link" href="{{ archive_url }}{{ scope.query }}" aria-label="مشاهدهٔ همهٔ {{ label }}">
+                            مشاهدهٔ همه <span aria-hidden="true">←</span>
+                        </a>
+                    </article>
+                {% endfor %}
+            </div>
+
+            <section class="landing-gatherings landing-reveal" aria-labelledby="gatherings-title">
+                <div class="landing-gatherings-heading">
+                    <p class="landing-kicker">قرارهای هیئت</p>
+                    <h2 id="gatherings-title">تجمعات شبانه</h2>
+                </div>
+
+                <div class="landing-gatherings-grid">
+                    <div class="landing-gatherings-column">
+                        <h3>جلسات پیش‌ رو</h3>
+                        <ul class="landing-list">
+                            {% for gathering in upcoming_gatherings %}
+                                <li class="landing-gathering-row">
+                                    <a class="landing-gathering-link" href="{{ gathering.get_absolute_url }}{{ scope.query }}">{{ gathering.title }}</a>
+                                    {% if gathering.notices.all %}
+                                        <div class="landing-badges">
+                                            {% for notice in gathering.notices.all %}
+                                                <span class="landing-badge">{{ notice.title }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </li>
+                            {% empty %}
+                                <li class="landing-empty">هنوز جلسه‌ای اعلام نشده است.</li>
+                            {% endfor %}
+                        </ul>
+                        <a class="landing-link" href="{% url 'night_gatherings:list' %}{{ scope.query }}">
+                            همهٔ جلسات <span aria-hidden="true">←</span>
+                        </a>
+                    </div>
+
+                    <div class="landing-gatherings-column">
+                        <h3>جلسات برگزارشده</h3>
+                        <ul class="landing-list">
+                            {% for gathering in held_gatherings %}
+                                <li class="landing-gathering-row">
+                                    <a class="landing-gathering-link" href="{{ gathering.get_absolute_url }}{{ scope.query }}">{{ gathering.title }}</a>
+                                    {% if gathering.reports.all %}
+                                        <div class="landing-badges">
+                                            {% for report in gathering.reports.all %}
+                                                <span class="landing-badge landing-badge-muted">{{ report.title }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </li>
+                            {% empty %}
+                                <li class="landing-empty">هنوز گزارشی برای جلسات ثبت نشده است.</li>
+                            {% endfor %}
+                        </ul>
+                        <a class="landing-link" href="{% url 'night_gatherings:list' %}?show=archive{% if scope.selected %}&amp;unit={{ scope.selected|urlencode }}{% endif %}">
+                            آرشیو جلسات <span aria-hidden="true">←</span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </section>
+    </div>
+
+    <section class="landing-wrap landing-service landing-reveal" aria-labelledby="service-title">
+        <div class="landing-service-copy">
+            <p class="landing-kicker">خادمی در هیئت</p>
+            <h2 id="service-title">در برپایی مجلس همراه ما باشید</h2>
+            <p>اگر دوست دارید در اجرای مراسم و فعالیت‌های فرهنگی کمک کنید، برای خادمی ثبت‌نام کنید.</p>
+        </div>
+        <a class="landing-button landing-button-dark" href="{% url 'registrations_campaigns:volunteer' %}{{ scope.query }}">
+            ثبت‌نام خُدام <span aria-hidden="true">←</span>
+        </a>
+    </section>
+</div>
+{% endblock %}

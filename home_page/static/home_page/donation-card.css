@@ -1,0 +1,97 @@
+/* Home donation card */
+
+.home-donation-section {
+    direction: rtl;
+    width: 80%;
+    margin: 35px auto;
+}
+
+.home-donation-card {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+    padding: 35px 40px;
+    border-radius: 20px;
+    background: linear-gradient(120deg, #103c3b, #176b58);
+    color: #ffffff;
+    text-decoration: none;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.home-donation-card:hover {
+    color: #ffffff;
+    text-decoration: none;
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(16, 60, 59, 0.2);
+}
+
+.home-donation-content {
+    position: relative;
+    z-index: 1;
+    max-width: 600px;
+}
+
+.home-donation-label {
+    display: inline-block;
+    color: #d8c58b;
+    font-size: 13px;
+    margin-bottom: 12px;
+}
+
+.home-donation-content h2 {
+    color: #ffffff;
+    font-size: 25px;
+    font-weight: 800;
+    margin-bottom: 12px;
+}
+
+.home-donation-content p {
+    color: #e0eeee;
+    font-size: 14px;
+    line-height: 2;
+    margin-bottom: 20px;
+}
+
+.home-donation-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 15px;
+    padding: 11px 20px;
+    border-radius: 9px;
+    background: #d8c58b;
+    color: #173c37;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.home-donation-icon {
+    flex-shrink: 0;
+    width: 105px;
+    height: 105px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 50%;
+    color: #d8c58b;
+    font-size: 55px;
+}
+
+@media (max-width: 600px) {
+    .home-donation-card {
+        padding: 25px 20px;
+    }
+
+    .home-donation-content h2 {
+        font-size: 20px;
+    }
+
+    .home-donation-icon {
+        width: 65px;
+        height: 65px;
+        font-size: 35px;
+    }
+}

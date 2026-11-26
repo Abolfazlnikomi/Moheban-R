@@ -7,7 +7,7 @@
 </header>
 <form method="get" class="filters unit-filter">
   {% if archived %}<input type="hidden" name="show" value="archive">{% endif %}
-  {% include "dorm_heiat/unit_select.html" %}
+  {% include "site_ui/unit_select.html" %}
   <button type="submit">اعمال فیلتر</button>
 </form>
 {% with selected=scope.selected %}
@@ -48,4 +48,3 @@
   </nav>
 {% endif %}
 {% endblock %}
-

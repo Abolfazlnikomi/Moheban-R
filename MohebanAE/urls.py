@@ -1,26 +1,13 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.contrib.auth import views as auth_views
 from django.urls import include, path
-from dorm_heiat.views import home
-
-from .account_views import AccountView, SiteLogoutView
 
 urlpatterns = [
-    path('', home, name='home'),
-    path('login/', auth_views.LoginView.as_view(template_name='accounts/login.html'), name='login'),
-    path('logout/', SiteLogoutView.as_view(), name='logout'),
-    path('account/', AccountView.as_view(), name='account'),
-    path('account/experiences/', include('experience_writing.urls')),
-    path('password-change/', auth_views.PasswordChangeView.as_view(
-        template_name='accounts/password_change.html',
-    ), name='password_change'),
-    path('password-change/done/', auth_views.PasswordChangeDoneView.as_view(
-        template_name='accounts/password_change_done.html',
-    ), name='password_change_done'),
+    path('', include('home_page.urls')),
+    path('', include('accounts.urls')),
     path('admin/', admin.site.urls),
-    path('staff/', include('MohebanAE.workspace_urls')),
+    path('staff/', include('workspace.urls')),
 
     # ماژول ادیتور متن پیشرفته CKEditor 5
     path('ckeditor5/', include('django_ckeditor_5.urls')),

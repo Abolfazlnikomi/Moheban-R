@@ -1,0 +1,599 @@
+{% extends "site_ui/workspace_base.html" %}
+
+{% block workspace %}
+<div class="nx-futuristic-container">
+
+  <!-- هاله‌های نوری شناور پس‌زمینه (Aurora Glows) -->
+  <div class="nx-aurora-glow nx-glow-top-right"></div>
+  <div class="nx-aurora-glow nx-glow-bottom-left"></div>
+
+  <!-- هدر هایپرمدرن با افکت شیشه‌ای و کادر نورانی -->
+  <header class="nx-glass-hero">
+    <div class="nx-hero-ambient-pattern"></div>
+    <div class="nx-hero-content">
+      <div class="nx-hero-meta">
+        <div class="nx-status-badge">
+          <span class="nx-pulse-light"></span>
+          <span>مدیریت پایگاه رسانه</span>
+        </div>
+        <h1 class="nx-neon-title">پست‌های رسانه‌ای</h1>
+        <p class="nx-hero-desc">لیست و کنترل پنل تمامی محتواها، مستندات تصویری، گزارش‌ها و پست‌های ثبت‌شده</p>
+      </div>
+
+      <div class="nx-hero-cta">
+        <a href="add/" class="nx-btn-neon">
+          <div class="nx-btn-glow"></div>
+          <div class="nx-btn-content">
+            <svg class="nx-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>ایجاد پست جدید</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- نوار ابزار شیشه‌ای با افکت نئوفلوئید -->
+  <section class="nx-toolbar-card">
+    <form class="nx-search-box" method="GET">
+      <div class="nx-search-input-wrap">
+        <svg class="nx-search-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" name="q" class="nx-input" placeholder="جستجوی هوشمند در پست‌ها، برچسب‌ها و دسته‌بندی..." value="{{ request.GET.q }}">
+      </div>
+      <button type="submit" class="nx-btn-filter">
+        <span>کاوش</span>
+      </button>
+    </form>
+
+    <div class="nx-meta-stats">
+      <div class="nx-stat-pill">
+        <span class="nx-stat-dot"></span>
+        <span class="nx-stat-label">تعداد رکوردها:</span>
+        <strong class="nx-stat-val">{{ object_list|length }}</strong>
+      </div>
+    </div>
+  </section>
+
+  <!-- کادر اصلی جدول شیشه‌ای چندلایه -->
+  <main class="nx-data-deck">
+    <div class="nx-deck-shimmer"></div>
+    <div class="nx-table-responsive">
+      <table class="nx-hyper-table">
+        <thead>
+          <tr>
+            <th class="nx-th-chk"><input type="checkbox" class="nx-chk-modern"></th>
+            <th>کد شناسه</th>
+            <th>مشخصات و عنوان پست</th>
+            <th>دسته‌بندی</th>
+            <th>وضعیت انتشار</th>
+            <th>تاریخ ثبت</th>
+            <th class="nx-text-center">اقدامات مدیریتی</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for obj in object_list %}
+          <tr class="nx-row-card">
+            <td class="nx-td-chk">
+              <input type="checkbox" class="nx-chk-modern" name="selected_ids" value="{{ obj.id }}">
+            </td>
+            <td>
+              <span class="nx-id-badge">#{{ obj.id }}</span>
+            </td>
+            <td>
+              <div class="nx-post-profile">
+                <div class="nx-post-avatar">
+                  <div class="nx-avatar-glow"></div>
+                  <div class="nx-avatar-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                      <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                      <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                  </div>
+                </div>
+                <div class="nx-post-info">
+                  <a href="{{ obj.id }}/change/" class="nx-post-link">{{ obj.title|default:"پست رسانه‌ای بدون عنوان" }}</a>
+                  <span class="nx-post-subtext">{{ obj.subtitle|default:"پست محتوایی چندرسانه‌ای" }}</span>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="nx-tag-chip">
+                <span>{{ obj.category|default:"رسانه جامع" }}</span>
+              </div>
+            </td>
+            <td>
+              {% if obj.is_active or obj.status == 'published' %}
+                <div class="nx-status-tag nx-tag-active">
+                  <span class="nx-dot"></span>
+                  <span>منتشر شده</span>
+                </div>
+              {% else %}
+                <div class="nx-status-tag nx-tag-draft">
+                  <span class="nx-dot"></span>
+                  <span>پیش‌نویس</span>
+                </div>
+              {% endif %}
+            </td>
+            <td>
+              <span class="nx-date-badge">{{ obj.created_at|date:"Y/m/d"|default:"1405/02/18" }}</span>
+            </td>
+            <td>
+              <div class="nx-action-dock">
+                <a href="{{ obj.id }}/change/" class="nx-action-icon nx-act-edit" title="ویرایش اطلاعات">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 20h9"></path>
+                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                  </svg>
+                </a>
+                <a href="{{ obj.id }}/delete/" class="nx-action-icon nx-act-del" title="حذف رکورد">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                </a>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <!-- Empty State -->
+          <tr class="nx-empty-row">
+            <td colspan="7">
+              <div class="nx-cyber-empty">
+                <div class="nx-empty-orb">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                  </svg>
+                </div>
+                <h3>هیچ رکوردی در این لیست وجود ندارد</h3>
+                <p>برای شروع اولین پست رسانه‌ای خود را ثبت نمایید.</p>
+                <a href="add/" class="nx-empty-btn">افزودن سریع</a>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+</div>
+
+<style>
+  :root {
+    --nx-primary: #059669;
+    --nx-primary-neon: #10b981;
+    --nx-emerald-deep: #064e3b;
+    --nx-glass-bg: rgba(255, 255, 255, 0.72);
+    --nx-glass-border: rgba(255, 255, 255, 0.85);
+    --nx-text-head: #0f172a;
+    --nx-text-body: #334155;
+    --nx-text-dim: #94a3b8;
+  }
+
+  .nx-futuristic-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+    padding-bottom: 3.5rem;
+    z-index: 1;
+    font-family: inherit;
+  }
+
+  /* Ambient Aurora Lights */
+  .nx-aurora-glow {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.4;
+    pointer-events: none;
+    z-index: -1;
+  }
+  .nx-glow-top-right {
+    top: -50px;
+    right: 5%;
+    width: 420px;
+    height: 420px;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.4) 0%, transparent 70%);
+  }
+  .nx-glow-bottom-left {
+    top: 40%;
+    left: -5%;
+    width: 380px;
+    height: 380px;
+    background: radial-gradient(circle, rgba(5, 150, 105, 0.25) 0%, transparent 70%);
+  }
+
+  /* --- Glass Hero Banner --- */
+  .nx-glass-hero {
+    position: relative;
+    border-radius: 28px;
+    background: linear-gradient(135deg, #064e3b 0%, #047857 60%, #059669 100%);
+    box-shadow: 0 25px 50px -18px rgba(6, 78, 59, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+    overflow: hidden;
+    padding: 2.8rem 2.4rem;
+    color: #ffffff;
+  }
+  .nx-hero-ambient-pattern {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1.5px, transparent 1.5px);
+    background-size: 28px 28px;
+    opacity: 0.5;
+  }
+  .nx-hero-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+
+  .nx-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(14px);
+    border-radius: 99px;
+    padding: 5px 14px;
+    font-size: 0.8rem;
+    color: #a7f3d0;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+  .nx-pulse-light {
+    width: 7px;
+    height: 7px;
+    background: #34d399;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #34d399;
+  }
+
+  .nx-neon-title {
+    font-size: 2.3rem;
+    font-weight: 900;
+    margin: 0 0 0.5rem 0;
+    letter-spacing: -0.02em;
+    background: linear-gradient(180deg, #ffffff 0%, #d1fae5 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .nx-hero-desc {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.85);
+    margin: 0;
+    max-width: 580px;
+    line-height: 1.6;
+  }
+
+  /* Neon CTA Button */
+  .nx-btn-neon {
+    position: relative;
+    text-decoration: none;
+    border-radius: 18px;
+    padding: 2px;
+    display: inline-block;
+    background: linear-gradient(135deg, #34d399 0%, #059669 100%);
+    box-shadow: 0 12px 25px -6px rgba(16, 185, 129, 0.5);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .nx-btn-content {
+    background: #ffffff;
+    color: var(--nx-emerald-deep);
+    padding: 0.85rem 1.6rem;
+    border-radius: 16px;
+    font-weight: 800;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+  }
+  .nx-btn-content .nx-icon { width: 20px; height: 20px; }
+  .nx-btn-neon:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 20px 35px -8px rgba(16, 185, 129, 0.6);
+  }
+  .nx-btn-neon:hover .nx-btn-content {
+    background: #ecfdf5;
+    color: #047857;
+  }
+
+  /* --- Toolbar Filter Bar --- */
+  .nx-toolbar-card {
+    background: var(--nx-glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--nx-glass-border);
+    border-radius: 22px;
+    padding: 1rem 1.4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.04);
+  }
+  .nx-search-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    max-width: 520px;
+  }
+  .nx-search-input-wrap {
+    position: relative;
+    flex: 1;
+  }
+  .nx-search-svg {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    color: var(--nx-text-dim);
+  }
+  .nx-input {
+    width: 100%;
+    padding: 0.75rem 2.6rem 0.75rem 1.2rem;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    font-family: inherit;
+    font-size: 0.9rem;
+    color: var(--nx-text-head);
+    transition: all 0.3s ease;
+  }
+  .nx-input:focus {
+    outline: none;
+    border-color: var(--nx-primary-neon);
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
+  }
+  .nx-btn-filter {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    padding: 0.75rem 1.5rem;
+    border-radius: 14px;
+    font-weight: 700;
+    color: var(--nx-text-body);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .nx-btn-filter:hover {
+    background: var(--nx-primary);
+    color: #ffffff;
+    border-color: var(--nx-primary);
+  }
+
+  .nx-stat-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 8px 16px;
+    border-radius: 99px;
+    font-size: 0.85rem;
+    color: var(--nx-text-body);
+  }
+  .nx-stat-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--nx-primary); }
+  .nx-stat-val { color: var(--nx-primary); font-weight: 900; }
+
+  /* --- Hyper Glass Data Deck --- */
+  .nx-data-deck {
+    position: relative;
+    background: var(--nx-glass-bg);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--nx-glass-border);
+    border-radius: 28px;
+    padding: 1rem 1.2rem 1.5rem;
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+  }
+
+  .nx-table-responsive { width: 100%; overflow-x: auto; }
+  .nx-hyper-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+    text-align: right;
+  }
+  .nx-hyper-table th {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: var(--nx-text-dim);
+    letter-spacing: -0.01em;
+  }
+
+  /* Row Card Design */
+  .nx-row-card {
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .nx-row-card td {
+    padding: 1.1rem 1.25rem;
+    border-top: 1px solid #f8fafc;
+    border-bottom: 1px solid #f8fafc;
+    vertical-align: middle;
+  }
+  .nx-row-card td:first-child {
+    border-right: 1px solid #f8fafc;
+    border-radius: 0 18px 18px 0;
+  }
+  .nx-row-card td:last-child {
+    border-left: 1px solid #f8fafc;
+    border-radius: 18px 0 0 18px;
+  }
+
+  .nx-row-card:hover {
+    transform: translateY(-3px) scale([1.002]);
+    box-shadow: 0 15px 30px -10px rgba(5, 150, 105, 0.12), 0 0 0 1px rgba(16, 185, 129, 0.3);
+  }
+
+  /* Checkbox */
+  .nx-chk-modern {
+    width: 20px;
+    height: 20px;
+    border-radius: 7px;
+    cursor: pointer;
+    accent-color: var(--nx-primary);
+  }
+
+  .nx-id-badge {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #94a3b8;
+    background: #f1f5f9;
+    padding: 4px 10px;
+    border-radius: 8px;
+  }
+
+  /* Post Profile */
+  .nx-post-profile {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .nx-post-avatar {
+    position: relative;
+    width: 48px;
+    height: 48px;
+  }
+  .nx-avatar-glow {
+    position: absolute;
+    inset: -2px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    border-radius: 16px;
+    filter: blur(4px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .nx-avatar-box {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 14px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    transition: all 0.3s ease;
+  }
+  .nx-avatar-box svg { width: 22px; height: 22px; }
+  .nx-row-card:hover .nx-avatar-glow { opacity: 0.4; }
+  .nx-row-card:hover .nx-avatar-box {
+    background: #ecfdf5;
+    color: var(--nx-primary);
+    border-color: #a7f3d0;
+  }
+
+  .nx-post-info { display: flex; flex-direction: column; gap: 3px; }
+  .nx-post-link {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--nx-text-head);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  .nx-row-card:hover .nx-post-link { color: var(--nx-primary); }
+  .nx-post-subtext { font-size: 0.8rem; color: var(--nx-text-dim); }
+
+  /* Tags & Chips */
+  .nx-tag-chip {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 12px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--nx-text-body);
+  }
+
+  .nx-status-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 99px;
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+  .nx-tag-active { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
+  .nx-tag-active .nx-dot { width: 7px; height: 7px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981; }
+
+  .nx-tag-draft { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+  .nx-tag-draft .nx-dot { width: 7px; height: 7px; border-radius: 50%; background: #f59e0b; }
+
+  .nx-date-badge { font-size: 0.85rem; color: var(--nx-text-body); font-weight: 600; }
+
+  /* Action Dock */
+  .nx-action-dock {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+  }
+  .nx-action-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #64748b;
+    transition: all 0.25s ease;
+  }
+  .nx-action-icon svg { width: 18px; height: 18px; }
+  .nx-act-edit:hover { background: #eff6ff; color: #2563eb; border-color: #bfdbfe; transform: scale(1.08); }
+  .nx-act-del:hover { background: #fef2f2; color: #dc2626; border-color: #fecaca; transform: scale(1.08); }
+
+  .nx-text-center { text-align: center; }
+
+  /* Empty State */
+  .nx-cyber-empty {
+    text-align: center;
+    padding: 4rem 1rem;
+  }
+  .nx-empty-orb {
+    width: 70px;
+    height: 70px;
+    border-radius: 22px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.25rem;
+    color: var(--nx-text-dim);
+  }
+  .nx-empty-orb svg { width: 34px; height: 34px; }
+  .nx-cyber-empty h3 { font-size: 1.3rem; color: var(--nx-text-head); margin-bottom: 0.4rem; font-weight: 800; }
+  .nx-cyber-empty p { color: var(--nx-text-dim); margin-bottom: 1.5rem; font-size: 0.95rem; }
+  .nx-empty-btn {
+    display: inline-block;
+    padding: 0.75rem 1.6rem;
+    background: var(--nx-primary);
+    color: #ffffff;
+    border-radius: 14px;
+    text-decoration: none;
+    font-weight: 700;
+  }
+</style>
+{% endblock %}

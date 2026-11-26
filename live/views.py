@@ -6,10 +6,9 @@ from django.contrib.admin import site
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from django.urls import reverse
-from MohebanAE.workspace_registry import BY_MODEL
+from workspace.registry import BY_MODEL, workspace_navigation
 from .models import LiveStream
 from .forms import LiveStreamForm
-from MohebanAE.workspace_views import workspace_navigation
 
 
 # صفحه عمومی پخش زنده سایت

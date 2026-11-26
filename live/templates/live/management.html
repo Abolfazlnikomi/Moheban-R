@@ -1,0 +1,134 @@
+
+{% extends "site_ui/workspace_base.html" %}
+{% load static %}
+
+{% block title %}مدیریت پخش زنده | محبان{% endblock %}
+{% block portal_title %}مدیریت پخش زنده{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'live/management.css' %}">
+{% endblock %}
+
+
+{% block workspace %}
+
+<div class="live-management">
+
+    <!-- سربرگ -->
+    <section class="live-header">
+
+        <div class="live-header-content">
+            <div class="live-header-icon">◉</div>
+
+            <div>
+                <h2>مدیریت پخش زنده</h2>
+                <p>
+                    اطلاعات و وضعیت پخش زنده آپارات را از این قسمت مدیریت کنید.
+                </p>
+            </div>
+        </div>
+
+        {% if live_stream and live_stream.is_active %}
+            <div class="live-status active">
+                <span class="live-status-dot"></span>
+                پخش فعال است
+            </div>
+        {% else %}
+            <div class="live-status inactive">
+                <span class="live-status-dot"></span>
+                پخش غیرفعال است
+            </div>
+        {% endif %}
+
+    </section>
+
+
+    <!-- فرم تنظیمات -->
+    <section class="live-form-card">
+
+        <div class="live-form-heading">
+            <h3>تنظیمات و اطلاعات لایو</h3>
+            <p>
+                عنوان، توضیحات و لینک پخش زنده خود را وارد یا ویرایش کنید.
+            </p>
+        </div>
+
+
+        <div class="live-form-body">
+
+            <form method="post">
+                {% csrf_token %}
+
+                <!-- عنوان -->
+                <div class="live-field">
+                    <label for="{{ form.title.id_for_label }}">
+                        عنوان پخش زنده
+                    </label>
+
+                    {{ form.title }}
+                    {{ form.title.errors }}
+                </div>
+
+
+                <!-- توضیحات -->
+                <div class="live-field">
+                    <label for="{{ form.description.id_for_label }}">
+                        توضیحات پخش زنده
+                    </label>
+
+                    {{ form.description }}
+                    {{ form.description.errors }}
+                </div>
+
+
+                <!-- لینک آپارات -->
+                <div class="live-field live-field-url">
+                    <label for="{{ form.embed_url.id_for_label }}">
+                        لینک Embed آپارات
+                    </label>
+
+                    {{ form.embed_url }}
+
+                    <small class="live-help">
+                        لینک Embed مربوط به پخش زنده آپارات را در این قسمت وارد کنید.
+                    </small>
+
+                    {{ form.embed_url.errors }}
+                </div>
+
+
+                <!-- وضعیت پخش -->
+                <div class="live-toggle-box">
+
+                    <div class="live-toggle-content">
+                        <strong>فعال‌سازی پخش زنده</strong>
+                        <span>
+                            با فعال کردن این گزینه، پخش زنده در سایت نمایش داده می‌شود.
+                        </span>
+                    </div>
+
+                    {{ form.is_active }}
+
+                </div>
+
+                {{ form.is_active.errors }}
+
+
+                <!-- دکمه ذخیره -->
+                <div class="live-form-actions">
+                    <button type="submit" class="live-save-btn">
+                        <span>✓</span>
+                        ذخیره تغییرات
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+
+    </section>
+
+</div>
+
+{% endblock %}

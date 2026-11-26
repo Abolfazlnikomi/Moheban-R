@@ -1,0 +1,161 @@
+{% load static site_footer %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+    <meta name="theme-color" content="#081f2b">
+    <meta name="description" content="محبان؛ پایگاه فرهنگی و مذهبی هیئت محبان اهل‌بیت علیهم‌السلام">
+
+    <title>{% block title %}محبان{% endblock %}</title>
+
+    <link rel="stylesheet" href="{% static 'site_ui/fonts.css' %}">
+    <link rel="stylesheet" href="{% static 'site_ui/base.css' %}">
+    <link rel="stylesheet" href="{% static 'site_info/footer.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body id="page-top" class="mohban-site{% block body_class %}{% endblock %}">
+
+{% block site_header %}
+<header class="site-header">
+    <div class="site-header-inner">
+
+        <a class="site-brand" href="{% url 'home' %}{{ scope.query }}">
+            <span class="site-brand-icon" aria-hidden="true">
+                <svg viewBox="0 0 40 40" fill="none">
+                    <path d="M20 3C18 11 7 13 7 23v12h26V23C33 13 22 11 20 3Z"
+                          stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M20 13v13m-6.5-6.5h13"
+                          stroke="currentColor" stroke-width="1.5"/>
+                    <circle cx="20" cy="20" r="2" fill="currentColor"/>
+                </svg>
+            </span>
+
+            <span class="brand-content">
+                <strong>محبان</strong>
+                <small>پایگاه فرهنگی و مذهبی</small>
+            </span>
+        </a>
+
+        <button class="mobile-menu-toggle"
+                type="button"
+                aria-label="منوی اصلی"
+                aria-controls="site-nav"
+                aria-expanded="false"
+                onclick="const nav = document.getElementById('site-nav'); const isOpen = nav.classList.toggle('is-open'); this.setAttribute('aria-expanded', String(isOpen));">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <nav class="site-nav" id="site-nav" aria-label="ناوبری اصلی">
+
+            <a href="{% url 'home' %}{{ scope.query }}"
+               {% if request.resolver_match.url_name == 'home' %}aria-current="page"{% endif %}>
+                خانه
+            </a>
+
+            <a href="{% url 'announcements:list' %}{{ scope.query }}"
+               {% if request.resolver_match.view_name == 'announcements:list' %}aria-current="page"{% endif %}>
+                اطلاعیه‌ها
+            </a>
+
+            <a href="{% url 'reports_media:archive' %}{{ scope.query }}"
+               {% if request.resolver_match.view_name == 'reports_media:archive' %}aria-current="page"{% endif %}>
+                گزارش‌ها
+            </a>
+
+            <a href="{% url 'publications:list' %}{{ scope.query }}"
+               {% if request.resolver_match.view_name == 'publications:list' %}aria-current="page"{% endif %}>
+                نشریات
+            </a>
+
+            <a href="{% url 'feedback_polls:index' %}"
+               {% if request.resolver_match.view_name == 'feedback_polls:index' %}aria-current="page"{% endif %}>
+                نظرات و نظرسنجی
+            </a>
+
+            <a href="{% url 'night_gatherings:list' %}{{ scope.query }}"
+               {% if request.resolver_match.view_name == 'night_gatherings:list' %}aria-current="page"{% endif %}>
+                تجمعات شبانه
+            </a>
+
+            <a href="{% url 'registrations_campaigns:campaigns' %}{{ scope.query }}"
+               {% if request.resolver_match.view_name == 'registrations_campaigns:campaigns' %}aria-current="page"{% endif %}>
+                پویش‌ها
+            </a>
+            <a href="{% url 'live:live_page' %}"
+                {% if request.resolver_match.view_name == 'live:live_page' %}aria-current="page"{% endif %}>
+                 پخش زنده
+            </a>
+
+            {% if menu_scope.options %}
+            <details class="site-menu">
+                <summary>واحدها <span aria-hidden="true">⌄</span></summary>
+
+                <div class="site-units-menu">
+                    <a href="{% url 'home' %}"{% if not menu_scope.selected %} aria-current="true"{% endif %}>
+                        همهٔ واحدها
+                    </a>
+
+                    {% for option in menu_scope.options %}
+                    <a href="{% url 'home' %}?unit={{ option.id }}"{% if menu_scope.selected == option.id %} aria-current="true"{% endif %}>
+                        {{ option.menu_label }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </details>
+            {% endif %}
+
+        </nav>
+
+        <div class="site-header-actions">
+
+            <a class="site-volunteer-link"
+               href="{% url 'registrations_campaigns:volunteer' %}{{ scope.query }}">
+                <span aria-hidden="true">✧</span>
+                ثبت‌نام خُدام
+            </a>
+
+            {% if user.is_authenticated %}
+
+                <a class="site-login-link" href="{% url 'account' %}">
+                    حساب کاربری
+                </a>
+
+                <form class="site-logout-form"
+                      method="post"
+                      action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="site-login-link">
+                        خروج
+                    </button>
+                </form>
+
+            {% else %}
+
+                <a class="site-login-link" href="{% url 'login' %}">
+                    ورود
+                </a>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+</header>
+{% endblock %}
+
+<main class="site-main">
+    {% block content %}{% endblock %}
+</main>
+
+{% block footer %}{% site_footer %}{% endblock %}
+
+{% block extra_js %}{% endblock %}
+
+</body>
+</html>

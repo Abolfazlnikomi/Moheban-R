@@ -1,147 +1,169 @@
-{% extends "base.html" %}
+{% extends "site_ui/base.html" %}
 
 {% block content %}
 <style>
 :root {
   --rm-primary: #0e3b2f;
+  --rm-primary-dark: #08241c;
   --rm-primary-light: #165b49;
-  --rm-primary-subtle: #e8f5e9;
   --rm-accent: #d97706;
   --rm-accent-hover: #b45309;
-  --rm-bg-main: #f8faf9;
+  --rm-bg-main: #f8fafc;
   --rm-surface: #ffffff;
   --rm-border: #e2e8f0;
-  --rm-text-main: #1e293b;
+  --rm-text-main: #0f172a;
   --rm-text-muted: #64748b;
-  --rm-radius-sm: 8px;
-  --rm-radius-md: 14px;
-  --rm-radius-lg: 20px;
-  --rm-radius-full: 9999px;
-  --rm-shadow-sm: 0 2px 4px rgba(14, 59, 47, 0.04);
-  --rm-shadow-md: 0 10px 25px -5px rgba(14, 59, 47, 0.07);
-  --rm-shadow-lg: 0 20px 35px -10px rgba(14, 59, 47, 0.12);
-  --rm-transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --rm-radius-sm: 10px;
+  --rm-radius-md: 16px;
+  --rm-radius-lg: 24px;
 }
 
 .reports-container {
-  max-width: 1240px;
+  max-width: 1300px;
   margin: 0 auto;
-  padding: 2.5rem 1.25rem 5rem;
+  padding: 2rem 1.25rem 5rem;
   direction: rtl;
+  font-family: inherit;
   color: var(--rm-text-main);
 }
 
-/* هدر مدرن */
+/* هدر اصلی */
 .reports-hero {
   position: relative;
-  background: linear-gradient(135deg, var(--rm-primary) 0%, #061c16 100%);
+  background: radial-gradient(circle at top right, var(--rm-primary-light), var(--rm-primary-dark));
   color: #fff;
   border-radius: var(--rm-radius-lg);
   padding: 3.5rem 2rem;
   text-align: center;
   margin-bottom: 2.5rem;
-  box-shadow: var(--rm-shadow-lg);
   overflow: hidden;
+  box-shadow: 0 20px 40px -15px rgba(14, 59, 47, 0.3);
+}
+
+.reports-hero::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(217, 119, 6, 0.15) 0%, transparent 70%);
+  pointer-events: none;
 }
 
 .reports-hero h1 {
-  font-size: 2.2rem;
-  font-weight: 800;
+  font-size: 2.25rem;
+  font-weight: 900;
+  letter-spacing: -0.5px;
   margin: 0 0 0.75rem;
 }
 
 .reports-hero p {
   font-size: 1.05rem;
+  color: #93c5fd;
   color: #d1fae5;
-  margin: 0;
-  opacity: 0.9;
+  margin: 0 auto;
+  max-width: 600px;
+  opacity: 0.95;
+  line-height: 1.7;
 }
 
-/* باکس فیلترها */
+/* پنل فیلترها */
 .reports-filters {
   background: var(--rm-surface);
   border: 1px solid var(--rm-border);
-  border-radius: var(--rm-radius-lg);
+  border-radius: var(--rm-radius-md);
   padding: 1.75rem;
-  margin-bottom: 3rem;
-  box-shadow: var(--rm-shadow-md);
+  margin-bottom: 2.5rem;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04);
 }
 
 .filter-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1.25rem;
 }
 
 .filter-field {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.45rem;
 }
 
 .filter-field label {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--rm-text-main);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #334155;
 }
 
-.filter-field input,
-.filter-field select {
+.filter-input,
+.filter-select {
   width: 100%;
-  padding: 0.65rem 0.85rem;
+  padding: 0.65rem 0.9rem;
   border-radius: var(--rm-radius-sm);
   border: 1px solid var(--rm-border);
-  background-color: var(--rm-bg-main);
-  color: var(--rm-text-main);
-  font-size: 0.9rem;
+  background-color: #f8fafc;
+  color: #1e293b;
   outline: none;
-  transition: var(--rm-transition);
+  font-size: 0.88rem;
+  font-family: inherit;
+  transition: all 0.2s ease;
 }
 
-.filter-field input:focus,
-.filter-field select:focus {
+.filter-input:focus,
+.filter-select:focus {
   border-color: var(--rm-accent);
-  background-color: #fff;
+  background: #fff;
   box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.15);
 }
 
 .filter-actions {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: 1.25rem;
+  justify-content: space-between;
   margin-top: 1.5rem;
   padding-top: 1.25rem;
   border-top: 1px solid #f1f5f9;
 }
 
-.btn-filter-submit {
-  display: inline-flex;
+.filter-count {
+  font-size: 0.85rem;
+  color: var(--rm-text-muted);
+}
+
+.filter-buttons {
+  display: flex;
   align-items: center;
-  gap: 0.5rem;
-  background: var(--rm-accent);
+  gap: 1rem;
+}
+
+.btn-filter-submit {
+  background: var(--rm-primary);
   color: #fff;
-  padding: 0.65rem 1.5rem;
+  padding: 0.65rem 1.75rem;
   border-radius: var(--rm-radius-sm);
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 0.9rem;
   border: none;
   cursor: pointer;
-  transition: var(--rm-transition);
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(14, 59, 47, 0.2);
 }
 
 .btn-filter-submit:hover {
-  background: var(--rm-accent-hover);
-  transform: translateY(-2px);
+  background: var(--rm-primary-light);
+  transform: translateY(-1px);
 }
 
 .btn-filter-reset {
-  color: var(--rm-text-muted);
+  color: #ef4444;
   text-decoration: none;
   font-size: 0.85rem;
+  font-weight: 600;
 }
 
 .btn-filter-reset:hover {
-  color: #ef4444;
+  text-decoration: underline;
 }
 
 /* شبکه کارت‌ها */
@@ -158,13 +180,13 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: var(--rm-transition);
-  box-shadow: var(--rm-shadow-sm);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
 }
 
 .report-card:hover {
   transform: translateY(-6px);
-  box-shadow: var(--rm-shadow-lg);
+  box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.08);
   border-color: #cbd5e1;
 }
 
@@ -173,6 +195,7 @@
   width: 100%;
   padding-top: 56.25%;
   background: #0f172a;
+  overflow: hidden;
 }
 
 .card-cover {
@@ -181,11 +204,25 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.4s ease;
+  transition: transform 0.5s ease;
 }
 
 .report-card:hover .card-cover {
   transform: scale(1.05);
+}
+
+.card-kind-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(8px);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.3rem 0.65rem;
+  border-radius: 6px;
+  z-index: 2;
 }
 
 .card-body {
@@ -197,15 +234,15 @@
 
 .card-title {
   margin: 0 0 0.75rem;
-  font-size: 1.2rem;
-  font-weight: 700;
-  line-height: 1.5;
+  font-size: 1.15rem;
+  font-weight: 800;
+  line-height: 1.55;
 }
 
 .card-title a {
   color: var(--rm-text-main);
   text-decoration: none;
-  transition: var(--rm-transition);
+  transition: color 0.2s;
 }
 
 .card-title a:hover {
@@ -214,8 +251,8 @@
 
 .card-summary {
   color: var(--rm-text-muted);
-  font-size: 0.9rem;
-  line-height: 1.6;
+  font-size: 0.88rem;
+  line-height: 1.65;
   margin-bottom: 1.25rem;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -227,31 +264,37 @@
 .meta-chips {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
   gap: 0.5rem;
   padding-top: 1rem;
   border-top: 1px solid #f1f5f9;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
+}
+
+.meta-group {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 .meta-chip {
-  background: var(--rm-bg-main);
+  background: #f1f5f9;
   color: var(--rm-text-muted);
-  padding: 0.25rem 0.65rem;
-  border-radius: var(--rm-radius-sm);
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  font-weight: 500;
 }
 
 .meta-chip.category {
-  background: var(--rm-primary-subtle);
+  background: #ecfdf5;
   color: var(--rm-primary);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 /* صفحه‌بندی */
 .pagination-wrapper {
-  margin-top: 3.5rem;
+  margin-top: 4rem;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -265,38 +308,42 @@
   border-radius: var(--rm-radius-sm);
   color: var(--rm-text-main);
   text-decoration: none;
-  font-weight: 600;
-  transition: var(--rm-transition);
+  font-weight: 700;
+  font-size: 0.85rem;
+  transition: all 0.2s;
 }
 
 .page-btn:hover {
-  border-color: var(--rm-accent);
-  color: var(--rm-accent);
+  border-color: var(--rm-primary);
+  color: var(--rm-primary);
+  background: #f8fafc;
 }
 
-.page-indicator {
-  font-size: 0.9rem;
+.page-info {
+  font-size: 0.85rem;
   color: var(--rm-text-muted);
+  font-weight: 600;
 }
 
 .empty-state {
   grid-column: 1 / -1;
   text-align: center;
-  padding: 4rem 1rem;
+  padding: 5rem 1.5rem;
   background: var(--rm-surface);
-  border: 2px dashed var(--rm-border);
+  border: 2px dashed #cbd5e1;
   border-radius: var(--rm-radius-md);
   color: var(--rm-text-muted);
 }
 </style>
 
 <div class="reports-container">
+  <!-- هدر اصلی -->
   <header class="reports-hero">
-    <h1>گزارش‌ها و رسانه‌ها</h1>
-    <p>آرشیو رویدادها، فایل‌های چندرسانه‌ای و اطلاعیه‌ها</p>
+    <h1>گزارش‌ها و آرشیو رسانه‌ای</h1>
+    <p>مجموعه کامل گزارش‌ها، عکس‌ها، صوت‌ها و فیلم‌های برگزاری جلسات و رویدادها</p>
   </header>
 
-  <!-- فرم فیلتر -->
+  <!-- فیلترها و جست‌وجو -->
   <section class="reports-filters">
     <form method="get">
       <div class="filter-grid">
@@ -309,22 +356,28 @@
       </div>
 
       <div class="filter-actions">
-        {% if params %}
-          <a href="?" class="btn-filter-reset">پاک‌کردن فیلترها</a>
-        {% endif %}
-        <button type="submit" class="btn-filter-submit">
-          اعمال فیلتر
-        </button>
+        <div class="filter-count">
+          نمایش موارد یافته شده
+        </div>
+        <div class="filter-buttons">
+          {% if params %}
+            <a href="?" class="btn-filter-reset">حذف فیلترها</a>
+          {% endif %}
+          <button type="submit" class="btn-filter-submit">اعمال فیلتر و جست‌وجو</button>
+        </div>
       </div>
     </form>
   </section>
 
-  <!-- لیست پست‌ها -->
+  <!-- لیست کارت‌ها -->
   <main class="cards-grid">
     {% for post in page.object_list %}
       <article class="report-card">
         {% if post.cover %}
           <div class="card-media">
+            {% if post.get_kind_display %}
+              <span class="card-kind-badge">{{ post.get_kind_display }}</span>
+            {% endif %}
             <img src="{% url 'reports_media:cover' post.pk %}" alt="{{ post.title }}" class="card-cover" loading="lazy">
           </div>
         {% endif %}
@@ -339,23 +392,27 @@
           {% endif %}
 
           <div class="meta-chips">
-            {% if post.category %}
-              <span class="meta-chip category">{{ post.category.name }}</span>
-            {% endif %}
-            {% if post.event_date %}
-              <span class="meta-chip">
-                {{ post.event_date|date:"Y/m/d" }}
-              </span>
-            {% endif %}
-            <span class="meta-chip">
-              بازدید: {{ post.views }}
-            </span>
+            <div class="meta-group">
+              {% if post.category %}
+                <span class="meta-chip category">{{ post.category.name }}</span>
+              {% endif %}
+              {% if post.event_date %}
+                <span class="meta-chip">{{ post.event_date|date:"Y/m/d" }}</span>
+              {% endif %}
+            </div>
+            <div class="meta-group">
+              <span class="meta-chip">👁 {{ post.views }}</span>
+            </div>
           </div>
         </div>
       </article>
     {% empty %}
       <div class="empty-state">
-        <p>هیچ موردی مطابق با فیلترهای انتخابی یافت نشد.</p>
+        <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="margin: 0 auto 1rem; opacity: 0.4;">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"></path>
+        </svg>
+        <p style="font-size: 1.1rem; font-weight: 700; color: #475569; margin-bottom: 0.5rem;">هیچ گزارشی یافت نشد!</p>
+        <p style="font-size: 0.85rem; margin: 0;">لطفاً کلمات کلیدی یا فیلترهای اعمال‌شده را تغییر دهید.</p>
       </div>
     {% endfor %}
   </main>
@@ -364,13 +421,13 @@
   {% if page.has_other_pages %}
     <nav class="pagination-wrapper">
       {% if page.has_previous %}
-        <a href="?page={{ page.previous_page_number }}{% if params %}&{{ params }}{% endif %}" class="page-btn">صفحه قبل</a>
+        <a href="?page={{ page.previous_page_number }}{% if params %}&{{ params }}{% endif %}" class="page-btn">← صفحه قبل</a>
       {% endif %}
 
-      <span class="page-indicator">صفحه {{ page.number }} از {{ page.paginator.num_pages }}</span>
+      <span class="page-info">صفحه {{ page.number }} از {{ page.paginator.num_pages }}</span>
 
       {% if page.has_next %}
-        <a href="?page={{ page.next_page_number }}{% if params %}&{{ params }}{% endif %}" class="page-btn">صفحه بعد</a>
+        <a href="?page={{ page.next_page_number }}{% if params %}&{{ params }}{% endif %}" class="page-btn">صفحه بعد →</a>
       {% endif %}
     </nav>
   {% endif %}

@@ -42,7 +42,7 @@
           <div class="prose">{{ report.description|linebreaks }}</div>
           <div class="gallery">
             {% for item in items %}
-              {% include "reports_media/player.html" with source=item.source local_url=item.local_url post=report %}
+              {% include "night_gatherings/player.html" with source=item.source local_url=item.local_url post=report %}
             {% endfor %}
           </div>
         </article>

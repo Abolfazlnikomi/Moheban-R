@@ -25,7 +25,7 @@ def private_experience_view(view):
 
 
 def render_experience(request, template, **context):
-    from MohebanAE.workspace_registry import workspace_navigation
+    from workspace.registry import workspace_navigation
 
     return render(request, f'experience_writing/{template}.html', {**workspace_navigation(request), **context})
 

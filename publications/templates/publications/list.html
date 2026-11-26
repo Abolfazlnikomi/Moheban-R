@@ -1,0 +1,23 @@
+{% extends "site_ui/base.html" %}
+{% block title %}{{ label }}{% endblock %}
+{% block content %}
+<main class="account-panel unit-page">
+  <h1>{{ label }}</h1>
+  {% include "site_ui/filter_form.html" %}
+  {% for item in page %}
+    <article>
+      <h2><a href="{{ item.get_absolute_url }}{{ scope.query }}">{{ item.title }}</a></h2>
+      <p>{{ item.summary }}</p>
+    </article>
+  {% empty %}
+    <p>محتوایی برای نمایش پیدا نشد.</p>
+  {% endfor %}
+  {% if page.has_other_pages %}
+    <nav aria-label="صفحه‌بندی">
+      {% if page.has_previous %}<a href="?page={{ page.previous_page_number }}{% if scope.selected %}&amp;unit={{ scope.selected }}{% endif %}">صفحهٔ قبل</a>{% endif %}
+      <span>{{ page.number }} از {{ page.paginator.num_pages }}</span>
+      {% if page.has_next %}<a href="?page={{ page.next_page_number }}{% if scope.selected %}&amp;unit={{ scope.selected }}{% endif %}">صفحهٔ بعد</a>{% endif %}
+    </nav>
+  {% endif %}
+</main>
+{% endblock %}
