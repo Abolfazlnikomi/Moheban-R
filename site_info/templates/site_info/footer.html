@@ -1,40 +1,180 @@
-<footer class="site-footer" aria-label="اطلاعات هیئت">
-  <div class="site-footer-inner">
-    <div class="site-footer-grid">
-      <section aria-labelledby="footer-about-heading">
-        <h2 id="footer-about-heading">درباره ما</h2>
-        <a class="site-footer-name" href="{% url 'home' %}">{{ footer_settings.name|default:"هیئت محبان اهل‌بیت علیهم‌السلام" }}</a>
-        {% if footer_settings.about %}{{ footer_settings.about|linebreaks }}{% endif %}
-        {% if footer_settings.goals %}<h3>اهداف</h3>{{ footer_settings.goals|linebreaks }}{% endif %}
-        {% if footer_settings.activities %}<h3>فعالیت‌ها</h3>{{ footer_settings.activities|linebreaks }}{% endif %}
-      </section>
-      <section aria-labelledby="footer-contact-heading">
-        <h2 id="footer-contact-heading">تماس با ما</h2>
-        {% if footer_settings.contact or footer_settings.phone or footer_settings.email or footer_settings.address %}
-          <address>
-            {% if footer_settings.contact %}{{ footer_settings.contact|linebreaks }}{% endif %}
-            {% if footer_settings.phone %}<p>تلفن: <bdi dir="ltr">{{ footer_settings.phone }}</bdi></p>{% endif %}
-            {% if footer_settings.email %}<p>ایمیل: <a href="mailto:{{ footer_settings.email|urlencode:'@' }}"><bdi>{{ footer_settings.email }}</bdi></a></p>{% endif %}
-            {% if footer_settings.address %}<p>نشانی: {{ footer_settings.address|linebreaksbr }}</p>{% endif %}
-          </address>
-        {% else %}
-          <p>اطلاعات تماس هنوز ثبت نشده است.</p>
-        {% endif %}
-      </section>
-      {% if footer_settings.channel_url or footer_settings.instagram_url or social_links %}
-        <section aria-labelledby="footer-social-heading">
-          <h2 id="footer-social-heading">کانال‌ها و شبکه‌های اجتماعی</h2>
-          <ul class="site-footer-links">
-            {% if footer_settings.channel_url %}<li><a href="{{ footer_settings.channel_url }}">کانال هیئت</a></li>{% endif %}
-            {% if footer_settings.instagram_url %}<li><a href="{{ footer_settings.instagram_url }}">اینستاگرام هیئت</a></li>{% endif %}
-            {% for link in social_links %}<li><a href="{{ link.url }}">{{ link.label }}</a></li>{% endfor %}
-          </ul>
-        </section>
-      {% endif %}
+{% load static %}
+
+<footer class="mohban-footer" aria-label="اطلاعات هیئت">
+    <div class="mohban-footer-inner">
+
+        <div class="mohban-footer-grid">
+
+            <!-- درباره ما -->
+            <section class="mohban-footer-column">
+                <h2>درباره ما</h2>
+
+                <a class="mohban-footer-name" href="{% url 'home' %}">
+                    {{ footer_settings.name|default:"هیئت محبان اهل‌بیت علیهم‌السلام" }}
+                </a>
+
+                <p class="mohban-footer-description">
+                    هیئت دانشجویی دانشگاه تربیت دبیر شهید رجایی
+                </p>
+
+                {% if footer_settings.about %}
+                    {{ footer_settings.about|linebreaks }}
+                {% endif %}
+
+                {% if footer_settings.goals %}
+                    <h3>اهداف</h3>
+                    {{ footer_settings.goals|linebreaks }}
+                {% endif %}
+
+                {% if footer_settings.activities %}
+                    <h3>فعالیت‌ها</h3>
+                    {{ footer_settings.activities|linebreaks }}
+                {% endif %}
+            </section>
+
+            <!-- ارتباط با ما -->
+            <section class="mohban-footer-column">
+                <h2>ارتباط با ما</h2>
+
+                {% if footer_settings.contact or footer_settings.phone or footer_settings.email or footer_settings.address %}
+
+                    <address>
+                        {% if footer_settings.contact %}
+                            {{ footer_settings.contact|linebreaks }}
+                        {% endif %}
+
+                        {% if footer_settings.phone %}
+                            <p>
+                                تلفن:
+                                <bdi dir="ltr">{{ footer_settings.phone }}</bdi>
+                            </p>
+                        {% endif %}
+
+                        {% if footer_settings.email %}
+                            <p>
+                                ایمیل:
+                                <a href="mailto:{{ footer_settings.email|urlencode:'@' }}">
+                                    <bdi>{{ footer_settings.email }}</bdi>
+                                </a>
+                            </p>
+                        {% endif %}
+
+                        {% if footer_settings.address %}
+                            <p>
+                                نشانی:
+                                {{ footer_settings.address|linebreaksbr }}
+                            </p>
+                        {% endif %}
+                    </address>
+
+                {% else %}
+                    <p>اطلاعات تماس هنوز ثبت نشده است.</p>
+                {% endif %}
+            </section>
+
+            <!-- شبکه های اجتماعی -->
+            <section class="mohban-footer-column">
+                <h2>شبکه‌های اجتماعی</h2>
+
+                <ul class="mohban-social-list">
+
+                    <li>
+                        <a href="https://eitaa.com/mohebban_srttu"
+                           target="_blank" rel="noopener noreferrer">
+
+                            <img
+                                class="mohban-social-icon"
+                                src="{% static 'site/images/social/eitaa.jpg' %}"
+                                alt=""
+                                width="22"
+                                height="22"
+                            >
+
+                            <span>ایتا</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="https://ble.ir/mohebban_srttu"
+                           target="_blank" rel="noopener noreferrer">
+
+                            <img
+                                class="mohban-social-icon"
+                                src="{% static 'site/images/social/bale.jpg' %}"
+                                alt=""
+                                width="22"
+                                height="22"
+                            >
+
+                            <span>بله</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="https://t.me/mohebban_srttu"
+                           target="_blank" rel="noopener noreferrer">
+
+                            <img
+                                class="mohban-social-icon"
+                                src="{% static 'site/images/social/telegram.jpg' %}"
+                                alt=""
+                                width="22"
+                                height="22"
+                            >
+
+                            <span>تلگرام</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="https://www.instagram.com/moheban.srttu"
+                           target="_blank" rel="noopener noreferrer">
+
+                            <img
+                                class="mohban-social-icon"
+                                src="{% static 'site/images/social/instagram.jpg' %}"
+                                alt=""
+                                width="22"
+                                height="22"
+                            >
+
+                            <span>اینستاگرام</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="https://www.aparat.com/heyat_srttu"
+                           target="_blank" rel="noopener noreferrer">
+
+                            <img
+                                class="mohban-social-icon"
+                                src="{% static 'site/images/social/aparat.jpg' %}"
+                                alt=""
+                                width="22"
+                                height="22"
+                            >
+
+                            <span>آپارات</span>
+                        </a>
+                    </li>
+
+                </ul>
+            </section>
+
+        </div>
+
+        <!-- بخش پایینی -->
+        <div class="mohban-footer-bottom">
+
+            <p lang="ar">
+                اللَّهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ وَآلِ مُحَمَّدٍ
+            </p>
+
+            <a href="#page-top">
+                بازگشت به بالای صفحه ↑
+            </a>
+
+        </div>
+
     </div>
-    <div class="site-footer-bottom">
-      <p lang="ar">اللَّهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ وَآلِ مُحَمَّدٍ</p>
-      <a href="#page-top">بازگشت به بالای صفحه <span aria-hidden="true">↑</span></a>
-    </div>
-  </div>
 </footer>

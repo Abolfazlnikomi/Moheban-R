@@ -1,0 +1,107 @@
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+{{ donation_settings.title|default:"کمک مالی به هیئت" }}
+{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'site/donation.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<main class="donation-page">
+
+    <section class="donation-container">
+
+        <div class="donation-header">
+            <span class="donation-label">حمایت از هیئت</span>
+
+            <h1>
+                {{ donation_settings.title|default:"کمک مالی به هیئت" }}
+            </h1>
+
+            {% if donation_settings.description %}
+                <p>{{ donation_settings.description }}</p>
+            {% else %}
+                <p>
+                    با کمک‌های ارزشمند شما، زمینه برگزاری بهتر برنامه‌ها
+                    و فعالیت‌های فرهنگی هیئت فراهم می‌شود.
+                </p>
+            {% endif %}
+        </div>
+
+        <div class="donation-card">
+
+            <div class="donation-card-header">
+                <h2>پرداخت از طریق کارت به کارت</h2>
+                <p>
+                    برای حمایت مالی، می‌توانید از تصویر زیر استفاده کنید.
+                </p>
+            </div>
+
+            {% if donation_settings.card_image %}
+                <div class="donation-image-wrapper">
+                    <img
+                        src="{{ donation_settings.card_image.url }}"
+                        alt="اطلاعات کارت بانکی هیئت"
+                        class="donation-card-image"
+                    >
+                </div>
+            {% else %}
+                <div class="donation-empty-image">
+                    <span>تصویر شماره کارت هنوز بارگذاری نشده است.</span>
+                </div>
+            {% endif %}
+
+            {% if donation_settings.card_description %}
+                <p class="donation-card-description">
+                    {{ donation_settings.card_description }}
+                </p>
+            {% endif %}
+
+            <div class="donation-divider"></div>
+
+            <div class="donation-online">
+                <h2>پرداخت آنلاین</h2>
+
+                <p>
+                    برای پرداخت آنلاین می‌توانید از دکمه زیر استفاده کنید.
+                </p>
+
+                <form method="post" action="{% url 'donations:payment' %}">
+                    {% csrf_token %}
+
+                    <button type="submit" class="donation-pay-button">
+                        <span>پرداخت آنلاین</span>
+                        <span class="donation-button-arrow">←</span>
+                    </button>
+                </form>
+
+                {% if not donation_settings or not donation_settings.payment_enabled %}
+                    <span class="donation-payment-status">
+                        درگاه پرداخت هنوز فعال نشده است.
+                    </span>
+                {% endif %}
+            </div>
+
+        </div>
+
+        {% if messages %}
+            <div class="donation-messages">
+                {% for message in messages %}
+                    <div class="donation-message {{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+    </section>
+
+</main>
+
+{% endblock %}
